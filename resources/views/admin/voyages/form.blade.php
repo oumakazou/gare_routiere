@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', {{ $voyage->id ? 'Éditer voyage' : 'Créer un voyage' }} )
+@section('title', $voyage->id ? 'Éditer voyage' : 'Créer un voyage')
 
 @section('content')
 <div class="space-y-6">
@@ -101,7 +101,7 @@
 
             <div class="grid gap-4 lg:grid-cols-2">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Prix de base (MAD) <span class="text-red-600">*</span></label>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Prix de base (DH) <span class="text-red-600">*</span></label>
                     <input type="number" name="base_price" value="{{ old('base_price', $voyage->base_price) }}" step="0.01" min="0" class="w-full rounded-2xl border border-slate-300 px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200" required />
                     @error('base_price')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>

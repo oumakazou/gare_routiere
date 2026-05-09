@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', {{ $societe->id ? 'Éditer - ' . $societe->nom : 'Créer une société' }} )
+@section('title', $societe->id ? 'Éditer - ' . $societe->nom : 'Créer une société')
 
 @section('content')
 <div class="space-y-6">

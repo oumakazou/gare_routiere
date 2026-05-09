@@ -1,57 +1,46 @@
-@extends('layouts.app')
+@extends('layouts.public')
 
-@section('title', 'Réserver le voyage')
+@section('title', 'Reserver un voyage')
 
 @section('content')
-    @include('components.flash')
-    
-    <div class="space-y-6">
-        <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
-            <h1 class="text-3xl font-semibold text-slate-900">Réservation</h1>
-            <p class="mt-2 text-slate-600">Complétez le formulaire pour réserver votre trajet.</p>
+<div class="mx-auto max-w-xl px-4 py-8 sm:px-6 lg:px-8">
+    @php
+        $arrivalCity = $voyage->destination ?? $voyage->ville_arrivee ?? $voyage->villeArrivee?->nom ?? 'Destination';
+        $rawDate = $voyage->travel_date ?? $voyage->date_voyage ?? $voyage->date_depart ?? null;
+        $displayDate = $rawDate ? \Illuminate\Support\Carbon::parse($rawDate)->format('d/m/Y') : '-';
+        $displayPrice = (float) ($voyage->total_ttc ?? $voyage->prix ?? $voyage->price ?? $voyage->base_price ?? 0);
+    @endphp
+    <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h1 class="text-2xl font-bold">Reservation</h1>
+        <p class="mt-2 text-sm text-slate-600">
+            Taza → {{ $arrivalCity }} | {{ $displayDate }} | {{ number_format($displayPrice, 2, ',', ' ') }} MAD
+        </p>
 
-            <div class="mt-6 grid gap-4 lg:grid-cols-2">
-                <div class="rounded-3xl bg-slate-50 p-6">
-                    <h2 class="text-lg font-semibold text-slate-900">Voyage</h2>
-                    <p class="mt-3 text-slate-700">{{ $voyage->villeDepart->nom }} → {{ $voyage->villeArrivee->nom }}</p>
-                    <p class="mt-2 text-slate-700">{{ $voyage->date_depart->format('d/m/Y') }} à {{ $voyage->heure_depart->format('H:i') }}</p>
-                    <p class="mt-2 text-slate-700">Prix unitaire: {{ number_format($voyage->price, 2, ',', ' ') }} MAD</p>
-                </div>
-                <div class="rounded-3xl bg-slate-50 p-6">
-                    <h2 class="text-lg font-semibold text-slate-900">Mode de paiement</h2>
-                    <p class="mt-3 text-slate-700">Choisissez une méthode de règlement pour finaliser la réservation.</p>
-                </div>
+        <form method="POST" action="{{ route('reservations.store', $voyage) }}" class="mt-6 space-y-4">
+            @csrf
+            <div>
+                <label for="client_name" class="mb-1 block text-sm font-semibold text-slate-700">Nom complet</label>
+                <input id="client_name" name="client_name" value="{{ old('client_name') }}" class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                @error('client_name')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
-            <form action="{{ route('reservations.store', $voyage) }}" method="POST" class="mt-8 space-y-4">
-                @csrf
-                <div class="grid gap-4 lg:grid-cols-2">
-                    <label class="block">
-                        <span class="text-sm font-medium text-slate-700">Nombre de places</span>
-                        <input type="number" name="nombre_places" value="{{ old('nombre_places', 1) }}" min="1" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" required />
-                    </label>
+            <div>
+                <label for="client_phone" class="mb-1 block text-sm font-semibold text-slate-700">Telephone</label>
+                <input id="client_phone" name="client_phone" value="{{ old('client_phone') }}" class="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100">
+                @error('client_phone')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
 
-                    <label class="block">
-                        <span class="text-sm font-medium text-slate-700">Date de réservation</span>
-                        <input type="date" name="date_reservation" value="{{ old('date_reservation', now()->toDateString()) }}" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" required />
-                    </label>
-                </div>
-
-                <label class="block">
-                    <span class="text-sm font-medium text-slate-700">Mode de règlement</span>
-                    <select name="mode_reglement_id" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" required>
-                        <option value="">Sélectionnez un mode</option>
-                        @foreach($modes as $mode)
-                            <option value="{{ $mode->id }}" {{ old('mode_reglement_id') == $mode->id ? 'selected' : '' }}>{{ $mode->nom }}</option>
-                        @endforeach
-                    </select>
-                </label>
-
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <a href="{{ route('voyages.show', $voyage) }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-300 px-6 py-3 text-slate-900 hover:bg-slate-100">Retour</a>
-                    <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-6 py-3 text-white hover:bg-blue-700">Valider la réservation</button>
-                </div>
-            </form>
-        </div>
+            <div class="flex gap-3 pt-2">
+                <a href="{{ route('voyages.index') }}" class="rounded-xl border border-slate-300 px-5 py-3 font-semibold text-slate-700 hover:bg-slate-50">Annuler</a>
+                <button type="submit" class="rounded-xl bg-emerald-600 px-5 py-3 font-semibold text-white hover:bg-emerald-700">
+                    Confirmer
+                </button>
+            </div>
+        </form>
     </div>
+</div>
 @endsection

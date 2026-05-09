@@ -1,99 +1,158 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
-@section('title', 'Admin Dashboard - Gare Routière')
+@section('title', 'Dashboard Admin')
 
 @section('content')
 <div class="space-y-6">
-    <!-- Header -->
-    <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
-        <h1 class="text-3xl font-bold text-slate-900">Admin Dashboard</h1>
-        <p class="mt-1 text-slate-600">Bienvenue dans le panneau d'administration</p>
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+            <h1 class="text-3xl font-bold">Dashboard</h1>
+            <p class="mt-2 text-sm text-slate-500">Statistiques en temps réel sur les voyages et les importations depuis Excel / CSV.</p>
+        </div>
+        <a href="{{ route('admin.reservations.index') }}" class="relative inline-flex rounded-xl bg-slate-900 px-4 py-2 text-sm font-semibold text-white">
+            Notifications
+            @if($newReservationsCount > 0)
+                <span class="absolute -right-2 -top-2 rounded-full bg-red-600 px-2 py-0.5 text-xs font-bold text-white">{{ $newReservationsCount }}</span>
+            @endif
+        </a>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Villes Card -->
-        <div class="rounded-3xl bg-gradient-to-br from-blue-50 to-blue-100 p-6 shadow-sm border border-blue-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-blue-600 font-semibold">Villes</p>
-                    <p class="mt-2 text-4xl font-bold text-blue-900">{{ $villes }}</p>
-                </div>
-                <svg class="h-12 w-12 text-blue-300" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                </svg>
-            </div>
-            <a href="{{ route('admin.villes.index') }}" class="mt-4 inline-flex text-blue-600 font-semibold hover:text-blue-700">Gérer →</a>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-slate-500">Total voyages</p>
+            <p class="mt-2 text-3xl font-bold">{{ $voyagesCount }}</p>
         </div>
-
-        <!-- Societes Card -->
-        <div class="rounded-3xl bg-gradient-to-br from-purple-50 to-purple-100 p-6 shadow-sm border border-purple-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-purple-600 font-semibold">Sociétés</p>
-                    <p class="mt-2 text-4xl font-bold text-purple-900">{{ \App\Models\Societe::count() }}</p>
-                </div>
-                <svg class="h-12 w-12 text-purple-300" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
-                </svg>
-            </div>
-            <a href="{{ route('admin.societes.index') }}" class="mt-4 inline-flex text-purple-600 font-semibold hover:text-purple-700">Gérer →</a>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-slate-500">Total tickets</p>
+            <p class="mt-2 text-3xl font-bold">{{ $totalTickets }}</p>
         </div>
-
-        <!-- Autocars Card -->
-        <div class="rounded-3xl bg-gradient-to-br from-green-50 to-green-100 p-6 shadow-sm border border-green-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-green-600 font-semibold">Autocars</p>
-                    <p class="mt-2 text-4xl font-bold text-green-900">{{ $autocars }}</p>
-                </div>
-                <svg class="h-12 w-12 text-green-300" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
-                    <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z" />
-                </svg>
-            </div>
-            <a href="{{ route('admin.autocars.index') }}" class="mt-4 inline-flex text-green-600 font-semibold hover:text-green-700">Gérer →</a>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-slate-500">Total TTC</p>
+            <p class="mt-2 text-3xl font-bold">{{ number_format($totalTtc, 2, ',', ' ') }} DH</p>
         </div>
-
-        <!-- Voyages Card -->
-        <div class="rounded-3xl bg-gradient-to-br from-orange-50 to-orange-100 p-6 shadow-sm border border-orange-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-orange-600 font-semibold">Voyages</p>
-                    <p class="mt-2 text-4xl font-bold text-orange-900">{{ $voyages }}</p>
-                </div>
-                <svg class="h-12 w-12 text-orange-300" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
-                </svg>
-            </div>
-            <a href="{{ route('admin.type-voyages.index') }}" class="mt-4 inline-flex text-orange-600 font-semibold hover:text-orange-700">Gérer →</a>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-slate-500">Voyages bloqués</p>
+            <p class="mt-2 text-3xl font-bold">{{ $blockedVoyages }}</p>
         </div>
-
-        <!-- Reservations Card -->
-        <div class="rounded-3xl bg-gradient-to-br from-pink-50 to-pink-100 p-6 shadow-sm border border-pink-200">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm text-pink-600 font-semibold">Réservations</p>
-                    <p class="mt-2 text-4xl font-bold text-pink-900">{{ $reservations }}</p>
-                </div>
-                <svg class="h-12 w-12 text-pink-300" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M5 9V7a1 1 0 011-1h8a1 1 0 011 1v2M5 9a2 2 0 002 2h6a2 2 0 002-2m-6 4h6a2 2 0 012 2v1a1 1 0 01-1 1H6a1 1 0 01-1-1v-1a2 2 0 012-2z" />
-                </svg>
-            </div>
-            <a href="{{ route('admin.reservations.index') }}" class="mt-4 inline-flex text-pink-600 font-semibold hover:text-pink-700">Voir →</a>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-slate-500">Sociétés actives</p>
+            <p class="mt-2 text-3xl font-bold">{{ $activeCompanies }}</p>
+        </div>
+        <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <p class="text-sm text-slate-500">Réservations totales</p>
+            <p class="mt-2 text-3xl font-bold">{{ $reservationsCount }}</p>
         </div>
     </div>
 
-    <!-- Quick Actions -->
-    <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
-        <h2 class="text-xl font-bold text-slate-900 mb-4">Actions rapides</h2>
-        <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <a href="{{ route('admin.villes.create') }}" class="rounded-2xl bg-blue-600 px-4 py-3 text-white font-medium hover:bg-blue-700 transition text-center">+ Ajouter une ville</a>
-            <a href="{{ route('admin.societes.create') }}" class="rounded-2xl bg-purple-600 px-4 py-3 text-white font-medium hover:bg-purple-700 transition text-center">+ Ajouter une société</a>
-            <a href="{{ route('admin.autocars.create') }}" class="rounded-2xl bg-green-600 px-4 py-3 text-white font-medium hover:bg-green-700 transition text-center">+ Ajouter un autocar</a>
-            <a href="{{ route('admin.type-voyages.create') }}" class="rounded-2xl bg-orange-600 px-4 py-3 text-white font-medium hover:bg-orange-700 transition text-center">+ Ajouter un type de voyage</a>
-            <a href="{{ route('admin.voyages.create') }}" class="rounded-2xl bg-indigo-600 px-4 py-3 text-white font-medium hover:bg-indigo-700 transition text-center">+ Créer un voyage</a>
-            <a href="{{ route('admin.reservations.index') }}" class="rounded-2xl bg-pink-600 px-4 py-3 text-white font-medium hover:bg-pink-700 transition text-center">📋 Voir les réservations</a>
+    <div class="grid gap-6 lg:grid-cols-2">
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-xl font-bold">Répartition des voyages</h2>
+            <p class="mt-2 text-sm text-slate-500">Visualise la proportion des voyages ouverts et bloqués.</p>
+
+            <div class="mt-6 space-y-4">
+                @php $statusTotal = $voyageStatusCounts->sum(); @endphp
+                @foreach($voyageStatusCounts as $label => $count)
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between text-sm text-slate-600">
+                            <span>{{ $label }}</span>
+                            <span class="font-semibold text-slate-900">{{ $count }}</span>
+                        </div>
+                        <div class="h-3 overflow-hidden rounded-full bg-slate-100">
+                            <div class="h-full rounded-full bg-blue-600" style="width: {{ $statusTotal ? round($count / $statusTotal * 100) : 0 }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-xl font-bold">Trend des tickets</h2>
+            <p class="mt-2 text-sm text-slate-500">Tickets vendus et montant TTC par date.</p>
+
+            <div class="mt-6 space-y-4">
+                @foreach($recentTicketStats as $stat)
+                    <div>
+                        <div class="flex items-center justify-between text-sm text-slate-600">
+                            <span>{{ \Carbon\Carbon::parse($stat->day)->format('d/m') }}</span>
+                            <span class="font-semibold text-slate-900">{{ $stat->tickets }} tickets</span>
+                        </div>
+                        <div class="mt-2 h-3 overflow-hidden rounded-full bg-slate-100">
+                            <div class="h-full rounded-full bg-cyan-600" style="width: {{ min(100, max(6, round($stat->tickets / max(1, $recentTicketStats->max('tickets')) * 100))) }}%"></div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    <div class="grid gap-6 xl:grid-cols-2">
+        <div class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-xl font-bold">Derniers voyages</h2>
+            <p class="mt-2 text-sm text-slate-500">Les derniers voyages créés ou importés depuis Excel / CSV.</p>
+
+            <div class="mt-6 overflow-x-auto">
+                <table class="min-w-full text-sm text-slate-700">
+                    <thead class="bg-slate-50 text-slate-600">
+                        <tr>
+                            <th class="px-4 py-3 text-left font-semibold">Date</th>
+                            <th class="px-4 py-3 text-left font-semibold">Destination</th>
+                            <th class="px-4 py-3 text-left font-semibold">Société</th>
+                            <th class="px-4 py-3 text-left font-semibold">Ligne</th>
+                            <th class="px-4 py-3 text-left font-semibold">Tickets</th>
+                            <th class="px-4 py-3 text-left font-semibold">Total TTC</th>
+                            <th class="px-4 py-3 text-left font-semibold">Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-200 bg-white">
+                        @forelse($lastVoyages as $voyage)
+                            <tr class="hover:bg-slate-50">
+                                <td class="px-4 py-3">{{ optional($voyage->travel_date)->format('d/m/Y') ?? '-' }}</td>
+                                <td class="px-4 py-3">{{ $voyage->destination ?? '-' }}</td>
+                                <td class="px-4 py-3">{{ $voyage->transportCompany?->name ?? 'N/A' }}</td>
+                                <td class="px-4 py-3">{{ $voyage->line_name ?? '-' }}</td>
+                                <td class="px-4 py-3">{{ $voyage->tickets }}</td>
+                                <td class="px-4 py-3">{{ number_format((float) $voyage->total_ttc, 2, ',', ' ') }} DH</td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $voyage->is_blocked ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700' }}">
+                                        {{ $voyage->is_blocked ? 'Bloqué' : 'Ouvert' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td class="px-4 py-4 text-sm text-slate-500" colspan="7">Aucun voyage récent disponible.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="space-y-6">
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 class="text-xl font-bold">Nouvelles reservations</h2>
+                @if($newReservations->isEmpty())
+                    <p class="mt-3 text-sm text-slate-600">Aucune nouvelle réservation.</p>
+                @else
+                    <div class="mt-4 space-y-3">
+                        @foreach($newReservations as $reservation)
+                            <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                                Nouvelle réservation pour {{ $reservation->voyage->ville_arrivee ?? 'destination inconnue' }}
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
+            <div class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 class="text-xl font-bold">Import données Excel / CSV</h2>
+                <p class="mt-2 text-sm text-slate-600">Importer les voyages existants. Si ton environnement XAMPP ne supporte pas XLSX, exporte le fichier en CSV puis importe-le ici.</p>
+                <form method="POST" action="{{ route('admin.voyages.import') }}" enctype="multipart/form-data" class="mt-4 flex flex-wrap items-center gap-3">
+                    @csrf
+                    <input type="file" name="file" required class="rounded-xl border border-slate-300 px-4 py-2">
+                    <button class="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700">Importer</button>
+                </form>
+            </div>
         </div>
     </div>
 </div>

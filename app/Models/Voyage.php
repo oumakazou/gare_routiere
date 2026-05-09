@@ -12,53 +12,38 @@ class Voyage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'ville_depart_id',
-        'ville_arrivee_id',
-        'autocar_id',
-        'type_voyage_id',
-        'date_depart',
-        'heure_depart',
-        'heure_arrivee',
-        'base_price',
-        'is_special',
+        'transport_company_id',
+        'line_name',
+        'destination',
+        'travel_date',
+        'departure_time',
+        'tickets',
+        'total_ttc',
+        'observations',
+        'is_blocked',
+        'blocked_by',
+        'created_by_name',
+        'ville_depart',
+        'ville_arrivee',
+        'date_voyage',
+        'prix',
+        'places_disponibles',
     ];
 
     protected $casts = [
-        'date_depart' => 'date',
-        'heure_depart' => 'datetime:H:i',
-        'heure_arrivee' => 'datetime:H:i',
-        'base_price' => 'decimal:2',
-        'is_special' => 'boolean',
+        'travel_date' => 'date',
+        'departure_time' => 'string',
+        'tickets' => 'integer',
+        'total_ttc' => 'decimal:2',
+        'is_blocked' => 'boolean',
+        'date_voyage' => 'date',
+        'prix' => 'decimal:2',
+        'places_disponibles' => 'integer',
     ];
 
-    public function getPriceAttribute(): float
+    public function transportCompany(): BelongsTo
     {
-        return $this->is_special ? round($this->base_price * 1.3, 2) : $this->base_price;
-    }
-
-    public function getSpecialLabelAttribute(): ?string
-    {
-        return $this->is_special ? 'Offre spéciale' : null;
-    }
-
-    public function villeDepart(): BelongsTo
-    {
-        return $this->belongsTo(Ville::class, 'ville_depart_id');
-    }
-
-    public function villeArrivee(): BelongsTo
-    {
-        return $this->belongsTo(Ville::class, 'ville_arrivee_id');
-    }
-
-    public function autocar(): BelongsTo
-    {
-        return $this->belongsTo(Autocar::class);
-    }
-
-    public function typeVoyage(): BelongsTo
-    {
-        return $this->belongsTo(TypeVoyage::class);
+        return $this->belongsTo(TransportCompany::class);
     }
 
     public function reservations(): HasMany

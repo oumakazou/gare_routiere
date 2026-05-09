@@ -45,7 +45,7 @@ class VoyageSearchService
 
             $voyage->setAttribute('travel_date', $travelDate);
             $voyage->setAttribute('resolved_price', $this->holidayService->priceForDate($voyage, $travelDate));
-            $voyage->setAttribute('available_seats', max($voyage->autocar->capacite - $reservedSeats, 0));
+            $voyage->setAttribute('computed_available_seats', max($voyage->autocar->capacite - $reservedSeats, 0));
             $voyage->setAttribute('booked_seat_numbers', $bookedSeatNumbers);
             $voyage->setAttribute('is_holiday_offer', $isHoliday);
             $voyage->setAttribute('special_label', $this->holidayService->specialLabel($travelDate));

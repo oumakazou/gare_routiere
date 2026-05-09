@@ -2,98 +2,99 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Equipement;
-use App\Models\Option;
-use App\Models\TypeVoyage;
-use App\Models\Ville;
+use App\Models\TransportCompany;
 use App\Models\Voyage;
 use Illuminate\Http\Request;
-use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class VoyageController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Voyage::with(['villeDepart', 'villeArrivee', 'autocar.societe', 'autocar.equipements', 'autocar.options', 'typeVoyage', 'reservations']);
+        if (! Schema::hasTable('voyages')) {
+            $voyages = collect();
+            $suggestedCity = null;
+            $arrivalCities = collect();
+            $transportCompanies = collect();
+            $lines = collect();
 
-        // Search filters
-        if ($request->filled('ville_depart')) {
-            $query->where('ville_depart_id', $request->ville_depart);
+            return view('voyages.index', compact('voyages', 'suggestedCity', 'arrivalCities', 'transportCompanies', 'lines'));
         }
 
-        if ($request->filled('ville_arrivee')) {
-            $query->where('ville_arrivee_id', $request->ville_arrivee);
-        }
+        $search = $request->filled('search') ? '%' . trim($request->string('search')->toString()) . '%' : null;
+        $destinationFilter = $request->filled('destination')
+            ? $request->string('destination')->trim()->toString()
+            : ($request->filled('ville_arrivee') ? $request->string('ville_arrivee')->trim()->toString() : null);
+        $dateFilter = $request->filled('date_voyage') ? $request->date_voyage : $request->date;
 
-        if ($request->filled('date')) {
-            $query->whereDate('date_depart', $request->date);
-        }
-
-        if ($request->filled('type_voyage')) {
-            $query->where('type_voyage_id', $request->type_voyage);
-        }
-
-        // Price range filter
-        if ($request->filled('price_min')) {
-            $priceMin = floatval($request->price_min);
-            $query->where(function ($q) use ($priceMin) {
-                $q->where('base_price', '>=', $priceMin)
-                  ->orWhere(function ($subQ) use ($priceMin) {
-                      $subQ->where('is_special', true)
-                           ->whereRaw('base_price * 1.3 >= ?', [$priceMin]);
-                  });
-            });
-        }
-
-        if ($request->filled('price_max')) {
-            $priceMax = floatval($request->price_max);
-            $query->where(function ($q) use ($priceMax) {
-                $q->where(function ($subQ) use ($priceMax) {
-                    $subQ->where('is_special', false)
-                         ->where('base_price', '<=', $priceMax);
-                })
-                ->orWhere(function ($subQ) use ($priceMax) {
-                    $subQ->where('is_special', true)
-                         ->whereRaw('base_price * 1.3 <= ?', [$priceMax]);
+        $query = Voyage::query()->with('transportCompany')
+            ->when($search, function ($query) use ($search) {
+                $query->where(function ($query) use ($search) {
+                    $query->where('destination', 'like', $search)
+                        ->orWhere('line_name', 'like', $search)
+                        ->orWhere('observations', 'like', $search)
+                        ->orWhereHas('transportCompany', function ($query) use ($search) {
+                            $query->where('name', 'like', $search);
+                        });
                 });
+            })
+            ->when($destinationFilter, function ($query) use ($destinationFilter) {
+                $query->where('destination', 'like', '%' . $destinationFilter . '%');
+            })
+            ->when($dateFilter, function ($query) use ($dateFilter) {
+                $query->whereDate('travel_date', $dateFilter);
+            })
+            ->when($request->filled('company_id'), function ($query) use ($request) {
+                $query->where('transport_company_id', $request->integer('company_id'));
+            })
+            ->when($request->filled('line_name'), function ($query) use ($request) {
+                $query->where('line_name', 'like', '%' . $request->string('line_name')->trim() . '%');
             });
-        }
 
-        // Time filter
-        if ($request->filled('time_period')) {
-            if ($request->time_period === 'morning') {
-                $query->whereTime('heure_depart', '>=', '05:00')
-                      ->whereTime('heure_depart', '<', '12:00');
-            } elseif ($request->time_period === 'evening') {
-                $query->whereTime('heure_depart', '>=', '18:00')
-                      ->whereTime('heure_depart', '<', '23:59');
+        $voyages = $query
+            ->orderBy('travel_date')
+            ->orderBy('departure_time')
+            ->paginate(12)
+            ->withQueryString();
+
+        $suggestedCity = null;
+        if ($voyages->isEmpty() && ($request->filled('ville_arrivee') || $request->filled('destination'))) {
+            $searchCity = $request->filled('destination')
+                ? $request->string('destination')->trim()->lower()->toString()
+                : $request->string('ville_arrivee')->trim()->lower()->toString();
+
+            $cities = Voyage::query()
+                ->distinct()
+                ->pluck('destination');
+
+            $bestScore = 0;
+            foreach ($cities as $city) {
+                similar_text($searchCity, mb_strtolower($city), $score);
+                if ($score > $bestScore) {
+                    $bestScore = $score;
+                    $suggestedCity = $city;
+                }
             }
         }
 
-        // Sorting
-        $sort = $request->get('sort', 'date');
-        if ($sort === 'price_asc') {
-            $query->orderBy('base_price', 'asc');
-        } elseif ($sort === 'price_desc') {
-            $query->orderBy('base_price', 'desc');
-        } elseif ($sort === 'time') {
-            $query->orderBy('date_depart', 'asc')->orderBy('heure_depart', 'asc');
-        } else {
-            $query->orderBy('date_depart', 'asc')->orderBy('heure_depart', 'asc');
-        }
+        $arrivalCities = Voyage::query()
+            ->distinct()
+            ->orderBy('destination')
+            ->pluck('destination');
 
-        $voyages = $query->paginate(10)->withQueryString();
+        $transportCompanies = Schema::hasTable('transport_companies')
+            ? TransportCompany::query()
+                ->orderBy('name')
+                ->pluck('name', 'id')
+            : collect();
 
-        // Get filter options
-        $villes = Ville::orderBy('nom')->get();
-        $typeVoyages = TypeVoyage::orderBy('nom')->get();
-        $equipements = Equipement::orderBy('nom')->get();
-        $options = Option::orderBy('nom')->get();
+        $lines = Voyage::query()
+            ->distinct()
+            ->orderBy('line_name')
+            ->pluck('line_name');
 
-        $searchParams = $request->only(['ville_depart', 'ville_arrivee', 'date', 'type_voyage', 'price_min', 'price_max', 'time_period', 'sort']);
-
-        return view('voyages', compact('voyages', 'villes', 'typeVoyages', 'equipements', 'options', 'searchParams'));
+        return view('voyages.index', compact('voyages', 'suggestedCity', 'arrivalCities', 'transportCompanies', 'lines'));
     }
 
     public function show(Voyage $voyage): View

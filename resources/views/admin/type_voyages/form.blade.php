@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', {{ $typeVoyage->id ? 'Éditer type' : 'Créer un type' }} )
+@section('title', $typeVoyage->id ? 'Éditer type' : 'Créer un type')
 
 @section('content')
 <div class="space-y-6">

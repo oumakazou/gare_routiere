@@ -21,7 +21,7 @@
                                 {{ $res->voyage->villeDepart->nom }} → {{ $res->voyage->villeArrivee->nom }}
                             </h3>
                             <p class="mt-1 text-slate-600">
-                                {{ $res->voyage->date_depart->format('d/m/Y') }} à {{ $res->voyage->heure_depart->format('H:i') }}
+                                Départ à {{ $res->voyage->heure_depart->format('H:i') }} - Arrivée à {{ $res->voyage->heure_arrivee->format('H:i') }}
                             </p>
                             <p class="mt-2 text-sm text-slate-600">
                                 <span class="font-semibold">{{ $res->nombre_places }}</span> place(s) • 
@@ -40,12 +40,26 @@
                                 ">
                                     {{ ucfirst($res->status) }}
                                 </span>
+                                @if($res->payment_status)
+                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ml-2
+                                        @if($res->payment_status === 'paid') bg-green-100 text-green-700
+                                        @elseif($res->payment_status === 'pending') bg-yellow-100 text-yellow-700
+                                        @else bg-red-100 text-red-700 @endif
+                                    ">
+                                        Paiement: {{ ucfirst($res->payment_status) }}
+                                    </span>
+                                @endif
                             </p>
                         </div>
                     </div>
 
-                    <div class="mt-4 pt-4 border-t border-slate-200 flex gap-2">
-                        <a href="{{ route('voyages.show', $res->voyage) }}" class="text-blue-600 hover:text-blue-700 font-semibold">Voir le trajet →</a>
+                    <div class="mt-4 pt-4 border-t border-slate-200 flex gap-2 flex-wrap">
+                        @if($res->payment_status === 'pending')
+                            <a href="{{ route('payments.create', $res) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+                                Payer maintenant
+                            </a>
+                        @endif
+                        <a href="{{ route('home') }}" class="text-blue-600 hover:text-blue-700 font-semibold">Voir les voyages →</a>
                     </div>
                 </div>
             @endforeach

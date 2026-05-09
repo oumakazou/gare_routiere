@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', {{ $equipement->id ? 'Éditer' : 'Créer un équipement' }} )
+@section('title', $equipement->id ? 'Éditer' : 'Créer un équipement')
 
 @section('content')
 <div class="space-y-6">

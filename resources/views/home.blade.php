@@ -1,92 +1,128 @@
 ﻿@extends('layouts.app')
 
-@section('title', 'Accueil - Gare Routière')
+@section('title', 'horseRide - Modern Travel Booking Platform')
 
 @section('content')
-    @include('components.flash')
-    
-    <section class="space-y-6">
-        <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                    <h1 class="text-3xl font-semibold text-slate-900">Recherchez votre voyage</h1>
-                    <p class="mt-2 text-slate-600">Trouvez un trajet de bus entre vos villes préférées.</p>
+
+@include('components.flash')
+
+<!-- Hero Section -->
+@include('components.hero')
+
+<!-- Voyage Grid Section -->
+<section id="voyages" class="py-16 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Section Header -->
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Available Trips
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Choose from our wide selection of routes across Morocco. Book your seat now and travel comfortably.
+            </p>
+        </div>
+
+        <!-- Filter and Sort (Future Enhancement) -->
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+            <div class="flex items-center gap-4">
+                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option>All Routes</option>
+                    <option>Casablanca - Rabat</option>
+                    <option>Rabat - Fès</option>
+                    <option>Fès - Marrakech</option>
+                </select>
+                <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <option>Sort by Date</option>
+                    <option>Sort by Price</option>
+                    <option>Sort by Duration</option>
+                </select>
+            </div>
+            <div class="text-sm text-gray-600">
+                Showing {{ count($voyages) }} trips
+            </div>
+        </div>
+
+        <!-- Voyage Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            @foreach($voyages as $voyage)
+                @include('components.voyage-card', ['voyage' => $voyage])
+            @endforeach
+        </div>
+
+        <!-- Load More Button (Future Enhancement) -->
+        <div class="text-center mt-12">
+            <button class="px-8 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-200">
+                Load More Trips
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="services" class="py-16 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Why Choose horseRide?
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">
+                Experience the future of travel booking with our modern platform designed for your comfort.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
                 </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Lightning Fast</h3>
+                <p class="text-gray-600">Book your trip in seconds with our optimized booking system.</p>
             </div>
 
-            <form action="{{ route('home') }}" method="GET" class="mt-6 grid gap-4 sm:grid-cols-3">
-                <label class="block">
-                    <span class="text-sm font-medium text-slate-700">Ville de départ</span>
-                    <select name="ville_depart" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-                        <option value="">Toutes</option>
-                        @foreach($villes as $ville)
-                            <option value="{{ $ville->id }}" {{ (string)($search['ville_depart'] ?? '') === (string)$ville->id ? 'selected' : '' }}>{{ $ville->nom }}</option>
-                        @endforeach
-                    </select>
-                </label>
-
-                <label class="block">
-                    <span class="text-sm font-medium text-slate-700">Ville d'arrivée</span>
-                    <select name="ville_arrivee" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200">
-                        <option value="">Toutes</option>
-                        @foreach($villes as $ville)
-                            <option value="{{ $ville->id }}" {{ (string)($search['ville_arrivee'] ?? '') === (string)$ville->id ? 'selected' : '' }}>{{ $ville->nom }}</option>
-                        @endforeach
-                    </select>
-                </label>
-
-                <label class="block">
-                    <span class="text-sm font-medium text-slate-700">Date</span>
-                    <input type="date" name="date" value="{{ $search['date'] ?? '' }}" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" />
-                </label>
-
-                <div class="sm:col-span-3 flex justify-end">
-                    <button type="submit" class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-6 py-3 text-white shadow-sm hover:bg-blue-700">Chercher</button>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
                 </div>
-            </form>
-        </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Secure & Safe</h3>
+                <p class="text-gray-600">Your data is protected with enterprise-grade security measures.</p>
+            </div>
 
-        <div class="grid gap-6 lg:grid-cols-2">
-            @forelse($voyages as $voyage)
-                <article class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
-                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <p class="text-sm uppercase tracking-[0.2em] text-slate-500">{{ $voyage->typeVoyage->nom }}</p>
-                            <h2 class="mt-2 text-2xl font-semibold text-slate-900">{{ $voyage->villeDepart->nom }} → {{ $voyage->villeArrivee->nom }}</h2>
-                            <p class="mt-1 text-slate-600">Départ le {{ $voyage->date_depart->format('d/m/Y') }} à {{ $voyage->heure_depart->format('H:i') }}</p>
-                        </div>
-                        <div class="rounded-3xl bg-slate-100 px-4 py-3 text-right">
-                            <p class="text-sm text-slate-500">Prix</p>
-                            <p class="mt-1 text-3xl font-semibold text-slate-900">{{ number_format($voyage->price, 2, ',', ' ') }} MAD</p>
-                            @if($voyage->is_special)
-                                <span class="mt-2 inline-flex rounded-full bg-rose-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-rose-700">Offre spéciale</span>
-                            @endif
-                        </div>
-                    </div>
-
-                    <div class="mt-6 grid gap-3 sm:grid-cols-2">
-                        <div class="rounded-3xl bg-slate-50 p-4">
-                            <p class="text-sm font-medium text-slate-700">Autocar</p>
-                            <p class="mt-1 text-slate-900">{{ $voyage->autocar->matricule }} ({{ $voyage->autocar->capacite }} places)</p>
-                            <p class="mt-1 text-sm text-slate-500">Société: {{ $voyage->autocar->societe->nom }}</p>
-                        </div>
-                        <div class="rounded-3xl bg-slate-50 p-4">
-                            <p class="text-sm font-medium text-slate-700">Équipements</p>
-                            <p class="mt-1 text-slate-900">{{ $voyage->autocar->equipements->pluck('nom')->join(' • ') ?: 'Aucun' }}</p>
-                            <p class="mt-1 text-sm text-slate-500">Options: {{ $voyage->autocar->options->pluck('nom')->join(' • ') ?: 'Aucune' }}</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <a href="{{ route('voyages.show', $voyage) }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-300 px-6 py-3 text-slate-900 hover:bg-slate-100">Détails</a>
-                        <a href="{{ route('reservations.create', $voyage) }}" class="inline-flex items-center justify-center rounded-2xl bg-blue-600 px-6 py-3 text-white hover:bg-blue-700">Réserver</a>
-                    </div>
-                </article>
-            @empty
-                <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200 col-span-full">
-                    <p class="text-slate-700">Aucun voyage trouvé pour ces critères. Essayez une autre combinaison.</p>
+            <div class="text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
                 </div>
-            @endforelse
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Customer First</h3>
+                <p class="text-gray-600">24/7 support and the best customer service in the industry.</p>
+            </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-16 bg-gradient-to-r from-blue-600 to-blue-700">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+            Ready to Start Your Journey?
+        </h2>
+        <p class="text-xl text-blue-100 mb-8">
+            Join thousands of satisfied travelers who choose horseRide for their Moroccan adventures.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#voyages" class="px-8 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100 transition duration-200">
+                Book Now
+            </a>
+            <a href="#services" class="px-8 py-3 border border-white text-white font-semibold rounded-lg hover:bg-white hover:text-blue-600 transition duration-200">
+                Learn More
+            </a>
+        </div>
+    </div>
+</section>
+
 @endsection

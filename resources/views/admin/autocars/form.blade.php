@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', {{ $autocar->id ? 'Éditer - ' . $autocar->matricule : 'Créer un autocar' }} )
+@section('title', $autocar->id ? 'Éditer - ' . $autocar->matricule : 'Créer un autocar')
 
 @section('content')
 <div class="space-y-6">
@@ -72,7 +72,7 @@
                 <div class="space-y-2">
                     @foreach($equipements as $equip)
                         <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="equipements[]" value="{{ $equip->id }}" {{ $autocar->equipements->contains($equip->id) || old('equipements', [])->search($equip->id) !== false ? 'checked' : '' }} class="w-4 h-4 rounded border-slate-300" />
+                            <input type="checkbox" name="equipements[]" value="{{ $equip->id }}" {{ $autocar->equipements->contains($equip->id) || in_array($equip->id, old('equipements', [])) ? 'checked' : '' }} class="w-4 h-4 rounded border-slate-300" />
                             <span class="text-slate-700">{{ $equip->nom }}</span>
                         </label>
                     @endforeach
@@ -88,7 +88,7 @@
                 <div class="space-y-2">
                     @foreach($options as $option)
                         <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="options[]" value="{{ $option->id }}" {{ $autocar->options->contains($option->id) || old('options', [])->search($option->id) !== false ? 'checked' : '' }} class="w-4 h-4 rounded border-slate-300" />
+                            <input type="checkbox" name="options[]" value="{{ $option->id }}" {{ $autocar->options->contains($option->id) || in_array($option->id, old('options', [])) ? 'checked' : '' }} class="w-4 h-4 rounded border-slate-300" />
                             <span class="text-slate-700">{{ $option->nom }}</span>
                         </label>
                     @endforeach
