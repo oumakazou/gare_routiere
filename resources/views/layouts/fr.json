@@ -1,0 +1,23 @@
+{
+    "app.name": "Gare Routière",
+    "app.tagline": "transport & mobilité",
+    "nav.home": "Accueil",
+    "nav.voyages": "Voyages",
+    "nav.touristique": "Touristiques",
+    "nav.messagerie": "Messagerie",
+    "nav.inspiration": "Inspiration",
+    "nav.about": "Qui sommes-nous",
+    "nav.contact": "Contact",
+    "nav.dashboard": "Tableau de bord",
+    "auth.login": "Connexion",
+    "auth.register": "S'inscrire",
+    "auth.logout": "Déconnexion",
+    "footer.innovative_transport": "Transport innovant au Maroc",
+    "footer.description": "Voyages fiables, sécurité renforcée et un service fait pour les voyageurs modernes.",
+    "footer.useful_links": "Liens utiles",
+    "footer.services": "Services",
+    "footer.support": "Support",
+    "footer.faq": "FAQ",
+    "footer.terms": "Conditions générales",
+    "footer.rights": "Tous droits réservés."
+}

@@ -1,0 +1,16 @@
+{
+    "app.name": "Bus Station",
+    "app.tagline": "transport & mobility",
+    "nav.home": "Home",
+    "nav.voyages": "Trips",
+    "nav.touristique": "Tourism",
+    "nav.messagerie": "Messaging",
+    "nav.inspiration": "Inspiration",
+    "nav.about": "About Us",
+    "nav.contact": "Contact",
+    "nav.dashboard": "Dashboard",
+    "nav.book_now": "Book Now",
+    "auth.login": "Login",
+    "auth.register": "Register",
+    "auth.logout": "Logout"
+}

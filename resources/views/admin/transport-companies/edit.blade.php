@@ -20,7 +20,7 @@
             </label>
             <div class="flex gap-3">
                 <a href="{{ route('admin.transport-companies.index') }}" class="rounded-xl border border-slate-300 px-5 py-3 font-semibold text-slate-700">Annuler</a>
-                <button class="rounded-xl bg-blue-600 px-5 py-3 font-semibold text-white">Mettre à jour</button>
+                <button class="rounded-xl bg-red-600 px-5 py-3 font-semibold text-white">Mettre à jour</button>
             </div>
         </form>
     </div>

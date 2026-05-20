@@ -6,7 +6,7 @@
 <div class="space-y-5">
     <div class="flex items-center justify-between">
         <h1 class="text-3xl font-bold">Sociétés de transport</h1>
-        <a href="{{ route('admin.transport-companies.create') }}" class="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700">+ Ajouter</a>
+        <a href="{{ route('admin.transport-companies.create') }}" class="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700">+ Ajouter</a>
     </div>
 
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
@@ -24,7 +24,7 @@
                         <td class="px-4 py-3">{{ $company->name }}</td>
                         <td class="px-4 py-3">{{ $company->is_active ? 'Oui' : 'Non' }}</td>
                         <td class="px-4 py-3 flex items-center gap-3">
-                            <a href="{{ route('admin.transport-companies.edit', $company) }}" class="text-blue-600 hover:underline">Modifier</a>
+                            <a href="{{ route('admin.transport-companies.edit', $company) }}" class="text-red-600 hover:underline">Modifier</a>
                             <form method="POST" action="{{ route('admin.transport-companies.destroy', $company) }}" onsubmit="return confirm('Supprimer ?')">
                                 @csrf
                                 @method('DELETE')

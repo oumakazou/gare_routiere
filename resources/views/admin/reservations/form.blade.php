@@ -8,7 +8,7 @@ php artisan serve@extends('layouts.app')
     @include('components.flash')
 
     <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white">
+    <section class="relative bg-gradient-to-br from-red-600 via-red-700 to-slate-800 text-white">
         <div class="absolute inset-0 bg-black/20"></div>
         <div class="relative mx-auto max-w-7xl px-4 py-24 sm:px-6 sm:py-32 lg:px-8">
             <div class="mx-auto max-w-2xl text-center">
@@ -18,7 +18,7 @@ php artisan serve@extends('layouts.app')
                 <h2 class="mt-4 text-xl font-semibold sm:text-2xl">
                     Gare Routière
                 </h2>
-                <p class="mt-6 text-lg leading-8 text-blue-100">
+                <p class="mt-6 text-lg leading-8 text-red-100">
                     Réservez votre voyage en bus de manière simple et rapide. Découvrez nos destinations et partez l'esprit tranquille.
                 </p>
             </div>
@@ -35,7 +35,7 @@ php artisan serve@extends('layouts.app')
                     <form action="{{ route('home') }}" method="GET" class="grid gap-6 md:grid-cols-3">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">Ville de départ</label>
-                            <select name="ville_depart" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-colors">
+                            <select name="ville_depart" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-colors">
                                 <option value="">Toutes les villes</option>
                                 @foreach($villes as $ville)
                                     <option value="{{ $ville->id }}" {{ request('ville_depart') == $ville->id ? 'selected' : '' }}>{{ $ville->nom }}</option>
@@ -45,7 +45,7 @@ php artisan serve@extends('layouts.app')
 
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">Ville d'arrivée</label>
-                            <select name="ville_arrivee" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-colors">
+                            <select name="ville_arrivee" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-colors">
                                 <option value="">Toutes les villes</option>
                                 @foreach($villes as $ville)
                                     <option value="{{ $ville->id }}" {{ request('ville_arrivee') == $ville->id ? 'selected' : '' }}>{{ $ville->nom }}</option>
@@ -55,11 +55,11 @@ php artisan serve@extends('layouts.app')
 
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-2">Date de départ</label>
-                            <input type="date" name="date" value="{{ request('date') }}" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-colors">
+                            <input type="date" name="date" value="{{ request('date') }}" class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-colors">
                         </div>
 
                         <div class="md:col-span-3 flex justify-center">
-                            <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-8 py-3 text-white font-semibold shadow-lg hover:bg-blue-700 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
+                            <button type="submit" class="inline-flex items-center justify-center rounded-xl bg-red-600 px-8 py-3 text-white font-semibold shadow-lg hover:bg-red-700 hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
@@ -92,14 +92,14 @@ php artisan serve@extends('layouts.app')
                                     <p class="text-sm text-slate-600 mt-1">{{ $voyage->societe->nom }}</p>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-2xl font-bold text-blue-600">{{ number_format($voyage->base_price, 2, ',', ' ') }} MAD</p>
+                                    <p class="text-2xl font-bold text-red-600">{{ number_format($voyage->base_price, 2, ',', ' ') }} MAD</p>
                                     <p class="text-xs text-slate-500">par personne</p>
                                 </div>
                             </div>
 
                             <div class="space-y-3">
                                 <div class="flex items-center text-slate-600">
-                                    <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                     </svg>
                                     <span class="text-sm">
@@ -109,14 +109,14 @@ php artisan serve@extends('layouts.app')
                                 </div>
 
                                 <div class="flex items-center text-slate-600">
-                                    <svg class="w-5 h-5 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 mr-2 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                     </svg>
                                     <span class="text-sm">{{ $voyage->date_depart->format('d/m/Y') }}</span>
                                 </div>
 
                                 <div class="flex items-center text-slate-600">
-                                    <svg class="w-5 h-5 mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 mr-2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                                     </svg>
                                     <span class="text-sm">{{ $voyage->autocar->capacite }} places disponibles</span>
@@ -125,7 +125,7 @@ php artisan serve@extends('layouts.app')
 
                             <div class="mt-6">
                                 @auth
-                                    <a href="{{ route('reservations.create', $voyage) }}" class="w-full inline-flex items-center justify-center rounded-xl bg-blue-600 px-6 py-3 text-white font-semibold hover:bg-blue-700 transition-colors duration-200">
+                                    <a href="{{ route('reservations.create', $voyage) }}" class="w-full inline-flex items-center justify-center rounded-xl bg-red-600 px-6 py-3 text-white font-semibold hover:bg-red-700 transition-colors duration-200">
                                         Réserver maintenant
                                     </a>
                                 @else
@@ -160,27 +160,27 @@ php artisan serve@extends('layouts.app')
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
-                        <h1 class="text-2xl font-bold text-blue-600">Gare Routière</h1>
+                        <h1 class="text-2xl font-bold text-red-600">Gare Routière</h1>
                     </div>
                     <div class="hidden md:block ml-10">
                         <div class="flex items-baseline space-x-4">
-                            <a href="{{ route('home') }}" class="text-gray-900 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Accueil</a>
-                            <a href="#" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Voyages</a>
-                            <a href="#" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">À propos</a>
-                            <a href="#" class="text-gray-500 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Contact</a>
+                            <a href="{{ route('home') }}" class="text-gray-900 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Accueil</a>
+                            <a href="#" class="text-gray-500 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Voyages</a>
+                            <a href="#" class="text-gray-500 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">À propos</a>
+                            <a href="#" class="text-gray-500 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Contact</a>
                         </div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Connexion</a>
-                    <a href="{{ route('register') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Inscription</a>
+                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">Connexion</a>
+                    <a href="{{ route('register') }}" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">Inscription</a>
                 </div>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="relative bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800 text-white overflow-hidden">
+    <section class="relative bg-gradient-to-br from-red-600 via-slate-600 to-slate-800 text-white overflow-hidden">
         <div class="absolute inset-0 bg-black/10"></div>
         <div class="absolute inset-0">
             <!-- Bus illustration placeholder -->
@@ -195,10 +195,10 @@ php artisan serve@extends('layouts.app')
                 <h1 class="text-4xl sm:text-6xl font-bold mb-6">
                     Réservez votre voyage facilement
                 </h1>
-                <p class="text-xl sm:text-2xl text-blue-100 mb-2">
+                <p class="text-xl sm:text-2xl text-red-100 mb-2">
                     Voyagez en toute sérénité avec notre plateforme moderne
                 </p>
-                <p class="text-lg text-purple-200">
+                <p class="text-lg text-slate-200">
                     سافر بأمان مع منصتنا الحديثة
                 </p>
             </div>
@@ -214,7 +214,7 @@ php artisan serve@extends('layouts.app')
                 <form action="{{ route('home') }}" method="GET" class="grid gap-6 md:grid-cols-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Ville de départ</label>
-                        <select name="ville_depart" class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-colors">
+                        <select name="ville_depart" class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-colors">
                             <option value="">Toutes les villes</option>
                             @foreach($villes as $ville)
                                 <option value="{{ $ville->id }}" {{ request('ville_depart') == $ville->id ? 'selected' : '' }}>{{ $ville->nom }}</option>
@@ -224,7 +224,7 @@ php artisan serve@extends('layouts.app')
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Ville d'arrivée</label>
-                        <select name="ville_arrivee" class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-colors">
+                        <select name="ville_arrivee" class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-colors">
                             <option value="">Toutes les villes</option>
                             @foreach($villes as $ville)
                                 <option value="{{ $ville->id }}" {{ request('ville_arrivee') == $ville->id ? 'selected' : '' }}>{{ $ville->nom }}</option>
@@ -234,11 +234,11 @@ php artisan serve@extends('layouts.app')
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Date de départ</label>
-                        <input type="date" name="date" value="{{ request('date') }}" class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200 transition-colors">
+                        <input type="date" name="date" value="{{ request('date') }}" class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200 transition-colors">
                     </div>
 
                     <div class="flex items-end">
-                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                        <button type="submit" class="w-full bg-gradient-to-r from-red-600 to-slate-600 hover:from-red-700 hover:to-slate-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
                             <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -265,7 +265,7 @@ php artisan serve@extends('layouts.app')
                             <div class="p-6">
                                 <div class="flex items-center justify-between mb-4">
                                     <div class="flex items-center">
-                                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
+                                        <div class="w-10 h-10 bg-gradient-to-br from-red-500 to-slate-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">
                                             {{ substr($voyage->autocar->societe->nom, 0, 1) }}
                                         </div>
                                         <div class="ml-3">
@@ -274,7 +274,7 @@ php artisan serve@extends('layouts.app')
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-neutral-100 text-neutral-800">
                                             Disponible
                                         </span>
                                     </div>
@@ -319,11 +319,11 @@ php artisan serve@extends('layouts.app')
 
                                 <div class="flex items-center justify-between">
                                     <div>
-                                        <p class="text-3xl font-bold text-blue-600">{{ number_format($voyage->base_price, 2, ',', ' ') }} DH</p>
+                                        <p class="text-3xl font-bold text-red-600">{{ number_format($voyage->base_price, 2, ',', ' ') }} DH</p>
                                         <p class="text-sm text-gray-500">par personne</p>
                                     </div>
                                     @auth
-                                        <a href="{{ route('reservations.create', $voyage) }}" class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                                        <a href="{{ route('reservations.create', $voyage) }}" class="bg-gradient-to-r from-red-600 to-slate-600 hover:from-red-700 hover:to-slate-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
                                             Réserver maintenant
                                         </a>
                                     @else
@@ -370,7 +370,7 @@ php artisan serve@extends('layouts.app')
             <div class="grid gap-4 lg:grid-cols-2">
                 <label class="block">
                     <span class="text-sm font-medium text-slate-700">Client</span>
-                    <select name="user_id" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" required>
+                    <select name="user_id" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200" required>
                         <option value="">Sélectionnez un utilisateur</option>
                         @foreach($users as $user)
                             <option value="{{ $user->id }}" {{ old('user_id', $reservation->user_id) == $user->id ? 'selected' : '' }}>{{ $user->name }} ({{ $user->email }})</option>
@@ -383,7 +383,7 @@ php artisan serve@extends('layouts.app')
 
                 <label class="block">
                     <span class="text-sm font-medium text-slate-700">Voyage</span>
-                    <select name="voyage_id" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" required>
+                    <select name="voyage_id" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200" required>
                         <option value="">Sélectionnez un voyage</option>
                         @foreach($voyages as $voyage)
                             <option value="{{ $voyage->id }}" {{ old('voyage_id', $reservation->voyage_id) == $voyage->id ? 'selected' : '' }}>
@@ -400,7 +400,7 @@ php artisan serve@extends('layouts.app')
             <div class="grid gap-4 lg:grid-cols-2">
                 <label class="block">
                     <span class="text-sm font-medium text-slate-700">Nombre de places</span>
-                    <input type="number" name="nombre_places" value="{{ old('nombre_places', $reservation->nombre_places ?? 1) }}" min="1" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" required />
+                    <input type="number" name="nombre_places" value="{{ old('nombre_places', $reservation->nombre_places ?? 1) }}" min="1" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200" required />
                     @error('nombre_places')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -408,7 +408,7 @@ php artisan serve@extends('layouts.app')
 
                 <label class="block">
                     <span class="text-sm font-medium text-slate-700">Mode de règlement</span>
-                    <select name="mode_reglement_id" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" required>
+                    <select name="mode_reglement_id" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200" required>
                         <option value="">Sélectionnez un mode</option>
                         @foreach($modes as $mode)
                             <option value="{{ $mode->id }}" {{ old('mode_reglement_id', $reservation->mode_reglement_id) == $mode->id ? 'selected' : '' }}>{{ $mode->nom }}</option>
@@ -423,7 +423,7 @@ php artisan serve@extends('layouts.app')
             <div class="grid gap-4 lg:grid-cols-2">
                 <label class="block">
                     <span class="text-sm font-medium text-slate-700">Date de réservation</span>
-                    <input type="date" name="date_reservation" value="{{ old('date_reservation', $reservation->date_reservation?->format('Y-m-d') ?? now()->toDateString()) }}" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" required />
+                    <input type="date" name="date_reservation" value="{{ old('date_reservation', $reservation->date_reservation?->format('Y-m-d') ?? now()->toDateString()) }}" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200" required />
                     @error('date_reservation')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
@@ -431,7 +431,7 @@ php artisan serve@extends('layouts.app')
 
                 <label class="block">
                     <span class="text-sm font-medium text-slate-700">Statut</span>
-                    <select name="status" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200" required>
+                    <select name="status" class="mt-1 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 focus:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-200" required>
                         <option value="confirmee" {{ old('status', $reservation->status) === 'confirmee' ? 'selected' : '' }}>Confirmée</option>
                         <option value="en_attente" {{ old('status', $reservation->status) === 'en_attente' ? 'selected' : '' }}>En attente</option>
                         <option value="annulee" {{ old('status', $reservation->status) === 'annulee' ? 'selected' : '' }}>Annulée</option>
@@ -444,7 +444,7 @@ php artisan serve@extends('layouts.app')
 
             <div class="flex gap-3 pt-4 border-t">
                 <a href="{{ route('admin.reservations.index') }}" class="rounded-2xl border border-slate-300 px-6 py-3 text-slate-700 font-semibold hover:bg-slate-100">← Annuler</a>
-                <button type="submit" class="rounded-2xl bg-blue-600 px-6 py-3 text-white font-semibold hover:bg-blue-700">{{ $reservation->id ? 'Mettre à jour' : 'Créer' }}</button>
+                <button type="submit" class="rounded-2xl bg-red-600 px-6 py-3 text-white font-semibold hover:bg-red-700">{{ $reservation->id ? 'Mettre à jour' : 'Créer' }}</button>
             </div>
         </form>
     </div>

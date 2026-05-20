@@ -1,76 +1,80 @@
 @extends('layouts.app')
 
-@section('title', 'Mes réservations')
+@section('title', 'Mes reservations')
 
 @section('content')
-<div class="space-y-6">
+<div class="section-shell py-10 sm:py-12">
     @include('components.flash')
 
-    <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
-        <h1 class="text-3xl font-bold text-slate-900">Mes réservations</h1>
-        <p class="mt-1 text-slate-600">Voir l'historique de vos réservations</p>
+    <div class="rounded-[2rem] bg-slate-950 px-6 py-8 text-white shadow-[0_32px_90px_-42px_rgba(15,23,42,0.55)] sm:px-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/50">Suivi client</p>
+        <h1 class="mt-4 text-3xl font-semibold sm:text-4xl">Mes reservations</h1>
+        <p class="mt-3 max-w-2xl text-sm leading-7 text-white/70">
+            Retrouvez vos dernieres reservations enregistrees dans ce navigateur et finalisez le paiement si besoin.
+        </p>
     </div>
 
-    @if($reservations->count() > 0)
-        <div class="space-y-4">
-            @foreach($reservations as $res)
-                <div class="rounded-3xl bg-white p-6 shadow-sm border border-slate-200">
-                    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-                        <div>
-                            <h3 class="text-xl font-bold text-slate-900">
-                                {{ $res->voyage->villeDepart->nom }} → {{ $res->voyage->villeArrivee->nom }}
-                            </h3>
-                            <p class="mt-1 text-slate-600">
-                                Départ à {{ $res->voyage->heure_depart->format('H:i') }} - Arrivée à {{ $res->voyage->heure_arrivee->format('H:i') }}
-                            </p>
-                            <p class="mt-2 text-sm text-slate-600">
-                                <span class="font-semibold">{{ $res->nombre_places }}</span> place(s) • 
-                                Réservé le {{ $res->date_reservation->format('d/m/Y') }}
-                            </p>
+    @if($reservations->isNotEmpty())
+        <div class="mt-8 space-y-4">
+            @foreach($reservations as $reservation)
+                @php
+                    $voyage = $reservation->voyage;
+                    $isPaid = in_array($reservation->id, $paidReservationIds, true);
+                    $destination = $voyage->destination ?? $voyage->ville_arrivee ?? 'Destination';
+                    $travelDate = $voyage?->travel_date?->format('d/m/Y') ?? '-';
+                    $amount = (float) ($voyage->total_ttc ?? 0);
+                @endphp
+
+                <div class="soft-panel rounded-[2rem] p-6">
+                    <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                        <div class="space-y-3">
+                            <div>
+                                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">Reservation #{{ $reservation->id }}</p>
+                                <h2 class="mt-2 text-2xl font-semibold text-slate-950">Taza - {{ $destination }}</h2>
+                            </div>
+
+                            <div class="grid gap-3 text-sm text-slate-600 sm:grid-cols-2">
+                                <p><span class="font-semibold text-slate-900">Client:</span> {{ $reservation->client_name }}</p>
+                                <p><span class="font-semibold text-slate-900">Telephone:</span> {{ $reservation->client_phone }}</p>
+                                <p><span class="font-semibold text-slate-900">Date:</span> {{ $travelDate }}</p>
+                                <p><span class="font-semibold text-slate-900">Heure:</span> {{ $voyage->departure_time ?: '-' }}</p>
+                            </div>
                         </div>
 
-                        <div class="text-right">
-                            <p class="text-sm text-slate-600">Total</p>
-                            <p class="text-3xl font-bold text-slate-900">{{ number_format($res->total_price, 2, ',', ' ') }} MAD</p>
-                            <p class="mt-2">
-                                <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold
-                                    @if($res->status === 'confirmee') bg-green-100 text-green-700
-                                    @elseif($res->status === 'en_attente') bg-yellow-100 text-yellow-700
-                                    @else bg-red-100 text-red-700 @endif
-                                ">
-                                    {{ ucfirst($res->status) }}
-                                </span>
-                                @if($res->payment_status)
-                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold ml-2
-                                        @if($res->payment_status === 'paid') bg-green-100 text-green-700
-                                        @elseif($res->payment_status === 'pending') bg-yellow-100 text-yellow-700
-                                        @else bg-red-100 text-red-700 @endif
-                                    ">
-                                        Paiement: {{ ucfirst($res->payment_status) }}
-                                    </span>
-                                @endif
-                            </p>
+                        <div class="rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 text-right shadow-sm">
+                            <p class="text-sm text-slate-500">Montant</p>
+                            <p class="mt-2 text-3xl font-semibold text-slate-950">{{ number_format($amount, 2, ',', ' ') }} MAD</p>
+                            <span class="mt-3 inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $isPaid ? 'bg-neutral-100 text-neutral-700' : 'bg-amber-100 text-amber-700' }}">
+                                {{ $isPaid ? 'Paiement confirme' : 'Paiement en attente' }}
+                            </span>
                         </div>
                     </div>
 
-                    <div class="mt-4 pt-4 border-t border-slate-200 flex gap-2 flex-wrap">
-                        @if($res->payment_status === 'pending')
-                            <a href="{{ route('payments.create', $res) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">
+                    <div class="mt-6 flex flex-col gap-3 border-t border-slate-200 pt-5 sm:flex-row">
+                        @if($isPaid)
+                            <a href="{{ route('payments.success', $reservation) }}" class="inline-flex items-center justify-center rounded-full bg-neutral-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-neutral-700">
+                                Voir le recu
+                            </a>
+                        @else
+                            <a href="{{ route('payments.create', $reservation) }}" class="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-black">
                                 Payer maintenant
                             </a>
                         @endif
-                        <a href="{{ route('home') }}" class="text-blue-600 hover:text-blue-700 font-semibold">Voir les voyages →</a>
+
+                        <a href="{{ route('voyages.index') }}" class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100">
+                            Reserver un autre voyage
+                        </a>
                     </div>
                 </div>
             @endforeach
         </div>
     @else
-        <div class="rounded-3xl bg-white p-12 shadow-sm border border-slate-200 text-center">
-            <svg class="h-12 w-12 mx-auto text-slate-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <p class="text-slate-600">Vous n'avez pas encore de réservations.</p>
-            <a href="{{ route('voyages.index') }}" class="mt-4 inline-flex text-blue-600 font-semibold hover:text-blue-700">Découvrir les voyages →</a>
+        <div class="soft-panel mt-8 rounded-[2rem] p-10 text-center">
+            <h2 class="text-2xl font-semibold text-slate-950">Aucune reservation enregistree</h2>
+            <p class="mt-3 text-slate-500">Commencez par reserver un trajet pour voir votre historique ici.</p>
+            <a href="{{ route('voyages.index') }}" class="mt-6 inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white transition hover:bg-black">
+                Voir les voyages
+            </a>
         </div>
     @endif
 </div>

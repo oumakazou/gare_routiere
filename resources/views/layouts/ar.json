@@ -1,0 +1,23 @@
+{
+    "app.name": "المحطة الطرقية",
+    "app.tagline": "النقل والتنقل",
+    "nav.home": "الرئيسية",
+    "nav.voyages": "الرحلات",
+    "nav.touristique": "سياحية",
+    "nav.messagerie": "المراسلة",
+    "nav.inspiration": "إلهام",
+    "nav.about": "من نحن",
+    "nav.contact": "اتصل بنا",
+    "nav.dashboard": "لوحة القيادة",
+    "auth.login": "تسجيل الدخول",
+    "auth.register": "إنشاء حساب",
+    "auth.logout": "تسجيل الخروج",
+    "footer.innovative_transport": "نقل مبتكر في المغرب",
+    "footer.description": "رحلات موثوقة، أمن معزز وخدمة مصممة للمسافرين المعاصرين.",
+    "footer.useful_links": "روابط مفيدة",
+    "footer.services": "خدماتنا",
+    "footer.support": "الدعم",
+    "footer.faq": "الأسئلة الشائعة",
+    "footer.terms": "الشروط والأحكام",
+    "footer.rights": "جميع الحقوق محفوظة."
+}

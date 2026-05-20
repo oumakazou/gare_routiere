@@ -9,6 +9,22 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            Schema::disableForeignKeyConstraints();
+            Schema::dropIfExists('voyages');
+            Schema::create('voyages', function (Blueprint $table) {
+                $table->id();
+                $table->string('ville_depart')->default('Taza');
+                $table->string('ville_arrivee');
+                $table->date('date_voyage')->nullable();
+                $table->decimal('prix', 8, 2)->nullable();
+                $table->unsignedInteger('places_disponibles')->default(0);
+                $table->timestamps();
+            });
+            Schema::enableForeignKeyConstraints();
+            return;
+        }
+
         if (! Schema::hasTable('voyages')) {
             Schema::create('voyages', function (Blueprint $table) {
                 $table->id();

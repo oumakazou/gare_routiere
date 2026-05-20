@@ -16,17 +16,39 @@ class LoginController extends Controller
         return view('auth.login');
     }
 
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $request->authenticate();
+        // 2. Si aucun admin valide n’existe, créer automatiquement cet utilisateur
+        if (! \App\Models\User::where('email', 'admin@example.com')->exists()) {
+            \App\Models\User::create([
+                'nom' => 'Admin User',
+                'email' => 'admin@example.com',
+                'mot_de_passe' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => 'admin',
+                'is_admin' => true,
+            ]);
+        }
 
-        $request->session()->regenerate();
+        // 6. Vérifier que les champs du formulaire login utilisent email et password
+        $credentials = $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+        ]);
 
-        return redirect()->intended(
-            $request->user()?->is_admin
-                ? route('admin.dashboard', absolute: false)
-                : route('home', absolute: false)
-        );
+        // 4. Vérifier que le login utilise bien Auth::attempt
+        if (Auth::attempt([
+            'email' => $request->email,
+            'password' => $request->password,
+        ], $request->boolean('remember'))) {
+            $request->session()->regenerate();
+
+            // 8. Après login réussi : redirect()->route('dashboard')
+            return redirect()->route('dashboard');
+        }
+
+        return back()->withErrors([
+            'email' => 'Les identifiants fournis sont incorrects.',
+        ])->onlyInput('email');
     }
 
     public function destroy(Request $request): RedirectResponse
@@ -36,6 +58,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect('/');
     }
 }

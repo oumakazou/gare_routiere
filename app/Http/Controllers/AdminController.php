@@ -14,7 +14,7 @@ class AdminController extends Controller
         $lastSeenId = (int) session('admin_last_seen_reservation_id', 0);
 
         $newReservations = Reservation::query()
-            ->with('voyage:id,ville_arrivee')
+            ->with('voyage:id,destination')
             ->where('id', '>', $lastSeenId)
             ->latest('id')
             ->take(5)
@@ -31,8 +31,8 @@ class AdminController extends Controller
             ->mapWithKeys(fn ($total, $blocked) => [$blocked ? 'Bloqués' : 'Ouverts' => $total]);
 
         $recentTicketStats = Voyage::query()
-            ->whereNotNull('travel_date')
-            ->selectRaw('DATE(travel_date) as day, SUM(tickets) as tickets, SUM(total_ttc) as total_ttc')
+            ->whereNotNull('departure_date')
+            ->selectRaw('DATE(departure_date) as day, SUM(available_seats) as tickets, SUM(price) as price')
             ->groupBy('day')
             ->orderByDesc('day')
             ->take(7)
@@ -50,8 +50,8 @@ class AdminController extends Controller
             'reservationsCount' => Reservation::count(),
             'newReservations' => $newReservations,
             'newReservationsCount' => $newReservationsCount,
-            'totalTickets' => (int) Voyage::sum('tickets'),
-            'totalTtc' => (float) Voyage::sum('total_ttc'),
+            'totalTickets' => (int) Voyage::sum('available_seats'),
+            'totalTtc' => (float) Voyage::sum('price'),
             'blockedVoyages' => Voyage::where('is_blocked', true)->count(),
             'activeCompanies' => TransportCompany::where('is_active', true)->count(),
             'voyageStatusCounts' => $voyageStatusCounts,

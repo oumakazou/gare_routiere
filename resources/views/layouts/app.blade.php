@@ -1,84 +1,94 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ app()->getLocale() }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" data-locale="{{ app()->getLocale() }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>@yield('title', 'Gare Routière - Book Your Trip')</title>
+        <title>@yield('title', __('app.name') . ' | ' . __('app.tagline'))</title>
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        <link href="https://fonts.bunny.net/css?family=manrope:400,500,600,700,800|playfair-display:600,700,800|tajawal:400,500,700,800&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="bg-white text-gray-900 font-sans antialiased">
+    @php($isHome = request()->routeIs('home'))
+    <body class="{{ app()->getLocale() === 'ar' ? 'font-arabic' : 'font-sans' }}">
         @include('components.header')
 
-        <main>
-            @yield('content')
+        <main class="{{ $isHome ? '' : 'pt-24 lg:pt-28' }}">
+            @isset($header)
+                <section class="section-shell pt-8 sm:pt-10">
+                    <div class="rounded-[2rem] border border-slate-200 bg-white px-6 py-5 shadow-sm">
+                        {{ $header }}
+                    </div>
+                </section>
+            @endisset
+
+            @hasSection('content')
+                @yield('content')
+            @else
+                {{ $slot ?? '' }}
+            @endif
         </main>
 
-        <!-- Footer -->
-        <footer class="bg-slate-950 text-slate-200 py-16 mt-16">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid gap-12 lg:grid-cols-4 mb-12">
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <div class="inline-flex h-12 w-12 items-center justify-center rounded-3xl bg-cyan-500 text-white text-xl">🚌</div>
+        <footer class="relative overflow-hidden bg-slate-950 text-slate-200">
+            <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),rgba(15,23,42,0)_42%)]"></div>
+
+            <div class="section-shell relative py-16 sm:py-20">
+                <div class="grid gap-10 lg:grid-cols-[1.2fr_0.85fr_0.85fr_1fr]">
+                    <div class="max-w-md space-y-5">
+                        <div class="flex items-center gap-4">
+                        <span class="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white" aria-hidden="true">
+                            <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 14h16v3a1 1 0 01-1 1h-1.5M4 14l1.5-6A2 2 0 016.4 7h11.2a2 2 0 011.9 1.4L20 14M6 18h.01M18 18h.01M8 6V5a1 1 0 011-1h6a1 1 0 011 1v1" />
+                            </svg>
+                        </span>
                             <div>
-                                <p class="text-2xl font-bold text-white">Gare Routière</p>
-                                <p class="text-sm text-slate-400">Transport innovant au Maroc</p>
+                                <p class="text-lg font-semibold uppercase tracking-[0.28em] text-white">{{ __('app.name') }}</p>
+                                <p class="text-xs uppercase tracking-[0.32em] text-slate-400">{{ __('footer.brand_caption') }}</p>
                             </div>
                         </div>
-                        <p class="text-sm text-slate-400">Voyages fiables, sécurité renforcée et un service fait pour les voyageurs modernes.</p>
+
+                        <p class="text-sm leading-7 text-slate-400">{{ __('footer.description') }}</p>
                     </div>
 
                     <div>
-                        <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400 mb-4">Liens utiles</h4>
-                        <ul class="space-y-3 text-sm text-slate-300">
-                            <li><a href="{{ route('home') }}" class="hover:text-white transition">Accueil</a></li>
-                            <li><a href="{{ route('voyages.index') }}" class="hover:text-white transition">Voyages</a></li>
-                            <li><a href="{{ route('home') }}#services" class="hover:text-white transition">Services</a></li>
+                        <h2 class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">{{ __('footer.explore') }}</h2>
+                        <ul class="mt-5 space-y-3 text-sm text-slate-300">
+                            <li><a href="{{ route('home') }}" class="transition hover:text-white">{{ __('nav.home') }}</a></li>
+                            <li><a href="{{ route('voyages.index') }}" class="transition hover:text-white">{{ __('nav.voyages') }}</a></li>
+                            <li><a href="{{ route('touristique') }}" class="transition hover:text-white">{{ __('nav.touristique') }}</a></li>
+                            <li><a href="{{ route('gare-inspiration') }}" class="transition hover:text-white">{{ __('nav.inspiration') }}</a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400 mb-4">Support</h4>
-                        <ul class="space-y-3 text-sm text-slate-300">
-                            <li><a href="{{ route('contact') }}" class="hover:text-white transition">Contact</a></li>
-                            <li><a href="{{ route('messagerie') }}" class="hover:text-white transition">FAQ</a></li>
-                            <li><a href="{{ route('contact') }}" class="hover:text-white transition">Conditions</a></li>
+                        <h2 class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">{{ __('footer.company') }}</h2>
+                        <ul class="mt-5 space-y-3 text-sm text-slate-300">
+                            <li><a href="{{ route('qui-nous-sommes') }}" class="transition hover:text-white">{{ __('nav.about') }}</a></li>
+                            <li><a href="{{ route('contact') }}" class="transition hover:text-white">{{ __('nav.contact') }}</a></li>
+                            <li><a href="{{ route('messagerie') }}" class="transition hover:text-white">{{ __('footer.support_link') }}</a></li>
+                            <li><a href="{{ route('voyages.index') }}" class="transition hover:text-white">{{ __('nav.book_now') }}</a></li>
                         </ul>
                     </div>
 
                     <div>
-                        <h4 class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-400 mb-4">Contact</h4>
-                        <p class="text-sm text-slate-300">Taza, Maroc</p>
-                        <p class="mt-2 text-sm text-slate-300">Gare Routiere@Taza.ma</p>
-                        <p class="mt-2 text-sm text-slate-300">+212 600 000 000</p>
-                        <div class="mt-5 flex items-center gap-3">
-<a href="https://www.facebook.com/gare.routiere.taza" target="_blank"
-           class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 hover:bg-blue-600 transition">
-            <span class="text-white font-bold">F</span>
-        </a>
-         <a href="https://www.instagram.com/gare.routiere.taza" target="_blank"
-           class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 hover:bg-pink-500 transition">
-            <span class="text-white font-bold">I</span>
-        </a>
- <a href="https://twitter.com/gare.routiere.taza" target="_blank"
-           class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-800 hover:bg-sky-500 transition">
-            <span class="text-white font-bold">T</span>
-        </a>
+                        <h2 class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">{{ __('footer.contact_title') }}</h2>
 
+                        <div class="mt-5 rounded-[1.75rem] border border-white/10 bg-white/5 p-6">
+                            <div class="space-y-4 text-sm text-slate-300">
+                                <p>{{ __('footer.location') }}</p>
+                                <p>{{ __('footer.email') }}</p>
+                                <p>{{ __('footer.phone') }}</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="border-t border-slate-800 pt-8 text-center text-slate-500 text-sm">
-                    <p>&copy; 2026 Gare Routière. Tous droits réservés.</p>
+                <div class="mt-12 flex flex-col gap-3 border-t border-white/10 pt-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+                    <p>&copy; {{ date('Y') }} {{ __('app.name') }}. {{ __('footer.rights') }}</p>
+                    <p>{{ __('footer.bottom_note') }}</p>
                 </div>
             </div>
         </footer>

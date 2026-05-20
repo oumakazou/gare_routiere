@@ -4,103 +4,81 @@ namespace App\Http\Controllers;
 
 use App\Models\Reservation;
 use App\Models\Voyage;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class ReservationController extends Controller
 {
-    public function create(Voyage $voyage): View|RedirectResponse
+    public function index(): View
     {
-        $availableSeats = (int) ($voyage->tickets ?? $voyage->places_disponibles ?? $voyage->available_seats ?? 0);
+        $reservationIds = $this->reservationHistory()->all();
+        $paidReservationIds = collect(session('paid_reservations', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter()
+            ->values()
+            ->all();
 
-        if ($availableSeats <= 0) {
-            return redirect()
-                ->route('voyages.index')
-                ->with('error', 'Ce voyage est complet.');
-        }
+        $reservations = Reservation::query()
+            ->with('voyage:id,destination,travel_date,departure_time,total_ttc,ville_arrivee')
+            ->whereIn('id', $reservationIds)
+            ->latest('id')
+            ->get();
 
+        return view('reservations.index', compact('reservations', 'paidReservationIds'));
+    }
+
+    public function create(Voyage $voyage): View
+    {
         return view('reservations.create', compact('voyage'));
     }
 
-    public function store(Request $request, Voyage $voyage)
+    public function store(Request $request, Voyage $voyage): RedirectResponse
     {
-        $data = $request->validate([
-            'client_name' => ['required', 'string', 'max:100'],
+        $availableSeats = $voyage->tickets ?? $voyage->places_disponibles;
+
+        if ($voyage->is_blocked || ($availableSeats !== null && (int) $availableSeats < 1)) {
+            return redirect()
+                ->route('voyages.index')
+                ->with('error', __('reservation.unavailable'));
+        }
+
+        $validated = $request->validate([
+            'client_name' => ['required', 'string', 'max:255'],
             'client_phone' => ['required', 'string', 'max:30'],
         ]);
 
-        $reserved = DB::transaction(function () use ($voyage, $data) {
-            $lockedVoyage = Voyage::query()->lockForUpdate()->findOrFail($voyage->id);
-            $availableSeats = (int) ($lockedVoyage->tickets ?? $lockedVoyage->places_disponibles ?? $lockedVoyage->available_seats ?? 0);
-            if ($availableSeats <= 0) {
-                return false;
-            }
+        $reservation = Reservation::query()->create([
+            'voyage_id' => $voyage->id,
+            'client_name' => $validated['client_name'],
+            'client_phone' => $validated['client_phone'],
+        ]);
 
-            if (Schema::hasColumn('reservations', 'client_name')) {
-                Reservation::create([
-                    'voyage_id' => $lockedVoyage->id,
-                    'client_name' => $data['client_name'],
-                    'client_phone' => $data['client_phone'],
-                ]);
-            } else {
-                // Backward-compatible insert for legacy reservations schema.
-                $userId = DB::table('users')->value('id');
-                if (! $userId) {
-                    $userId = DB::table('users')->insertGetId([
-                        'nom' => $data['client_name'],
-                        'email' => 'legacy_' . time() . '@example.com',
-                        'mot_de_passe' => bcrypt('password123'),
-                        'is_admin' => false,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-
-                $modeReglementId = DB::table('mode_reglements')->value('id');
-                if (! $modeReglementId) {
-                    $modeReglementId = DB::table('mode_reglements')->insertGetId([
-                        'nom' => 'Especes',
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-                }
-
-                DB::table('reservations')->insert([
-                    'user_id' => $userId,
-                    'voyage_id' => $lockedVoyage->id,
-                    'nombre_places' => 1,
-                    'seat_numbers' => json_encode([1]),
-                    'mode_reglement_id' => $modeReglementId,
-                    'date_reservation' => now()->toDateString(),
-                    'status' => 'confirmee',
-                    'total_price' => (float) ($lockedVoyage->price ?? $lockedVoyage->base_price ?? 0),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            }
-
-            if (Schema::hasColumn('voyages', 'tickets')) {
-                $lockedVoyage->decrement('tickets');
-            } elseif (Schema::hasColumn('voyages', 'places_disponibles')) {
-                $lockedVoyage->decrement('places_disponibles');
-            } else {
-                $lockedVoyage->decrement('available_seats');
-            }
-
-            return true;
-        });
-
-        if (! $reserved) {
-            return redirect()
-                ->route('voyages.index')
-                ->with('error', 'Plus de places disponibles pour ce voyage.');
+        if ($voyage->tickets !== null && $voyage->tickets > 0) {
+            $voyage->decrement('tickets');
+        } elseif ($voyage->places_disponibles !== null && $voyage->places_disponibles > 0) {
+            $voyage->decrement('places_disponibles');
         }
 
+        session([
+            'reservation_history' => $this->reservationHistory()
+                ->prepend($reservation->id)
+                ->unique()
+                ->take(20)
+                ->values()
+                ->all(),
+        ]);
+
         return redirect()
-            ->route('voyages.index')
-            ->with('success', 'Reservation effectuee avec succes.');
+            ->route('reservations.index')
+            ->with('success', __('reservation.success'));
+    }
+
+    private function reservationHistory(): Collection
+    {
+        return collect(session('reservation_history', []))
+            ->map(fn ($id) => (int) $id)
+            ->filter();
     }
 }

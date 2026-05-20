@@ -37,6 +37,22 @@ class PageController extends Controller
         return view('pages.contact');
     }
 
+    public function submitMessagerie(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'full_name' => ['required', 'string', 'max:150'],
+            'email' => ['required', 'email', 'max:255'],
+            'subject' => ['required', 'string', 'max:120'],
+            'message' => ['required', 'string', 'max:5000'],
+        ]);
+
+        Log::info('Messaging form submission', $validated);
+
+        return redirect()
+            ->route('messagerie')
+            ->with('success', 'Votre message a bien ete envoye. Notre equipe revient vers vous rapidement.');
+    }
+
     public function submitContact(Request $request): RedirectResponse
     {
         $validated = $request->validate([

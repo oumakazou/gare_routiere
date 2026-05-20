@@ -3,65 +3,93 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservation;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Illuminate\View\View;
 
 class PaymentController extends Controller
 {
-    public function create(Reservation $reservation)
+    public function create(Reservation $reservation): View|RedirectResponse
     {
-        // Ensure user owns the reservation
-        if ($reservation->user_id !== Auth::id()) {
-            abort(403);
+        if (! $this->belongsToCurrentSession($reservation)) {
+            return redirect()
+                ->route('reservations.index')
+                ->with('error', 'Cette reservation n est pas disponible dans votre session.');
         }
 
-        // Only allow payment for pending reservations
-        if ($reservation->payment_status !== 'pending') {
-            return redirect()->route('reservations.index')->with('error', 'Cette réservation ne nécessite pas de paiement.');
+        if ($this->isPaid($reservation)) {
+            return redirect()
+                ->route('payments.success', $reservation)
+                ->with('success', 'Cette reservation est deja marquee comme payee.');
         }
+
+        $reservation->load('voyage');
 
         return view('payments.create', compact('reservation'));
     }
 
-    public function store(Request $request, Reservation $reservation)
+    public function store(Request $request, Reservation $reservation): RedirectResponse
     {
-        // Ensure user owns the reservation
-        if ($reservation->user_id !== Auth::id()) {
-            abort(403);
+        if (! $this->belongsToCurrentSession($reservation)) {
+            return redirect()
+                ->route('reservations.index')
+                ->with('error', 'Cette reservation n est pas disponible dans votre session.');
         }
 
-        $request->validate([
-            'payment_method' => 'required|in:card,bank_transfer',
-            'card_number' => 'required_if:payment_method,card|string|size:16',
-            'expiry_date' => 'required_if:payment_method,card|string|regex:/^\d{2}\/\d{2}$/',
-            'cvv' => 'required_if:payment_method,card|string|size:3',
+        $validated = $request->validate([
+            'payment_method' => ['required', 'in:card,bank_transfer'],
+            'card_number' => ['required_if:payment_method,card', 'nullable', 'string', 'regex:/^[0-9 ]{13,19}$/'],
+            'expiry_date' => ['required_if:payment_method,card', 'nullable', 'string', 'regex:/^(0[1-9]|1[0-2])\/\d{2}$/'],
+            'cvv' => ['required_if:payment_method,card', 'nullable', 'string', 'regex:/^\d{3,4}$/'],
+            'terms' => ['accepted'],
         ]);
 
-        // Simulate payment processing
-        // In production, integrate with Stripe or other payment gateway
-        $paymentSuccessful = $this->processPayment($request->all());
+        Log::info('Reservation payment registered', [
+            'reservation_id' => $reservation->id,
+            'payment_method' => $validated['payment_method'],
+        ]);
 
-        if ($paymentSuccessful) {
-            $reservation->update([
-                'payment_status' => 'paid',
-                'status' => 'confirmee'
-            ]);
+        session([
+            'paid_reservations' => collect(session('paid_reservations', []))
+                ->prepend($reservation->id)
+                ->unique()
+                ->values()
+                ->all(),
+            'last_paid_reservation_id' => $reservation->id,
+        ]);
 
-            return redirect()->route('payments.success')->with('success', 'Paiement effectué avec succès!');
-        } else {
-            return back()->with('error', 'Échec du paiement. Veuillez réessayer.');
+        return redirect()
+            ->route('payments.success', $reservation)
+            ->with('success', 'Paiement enregistre avec succes.');
+    }
+
+    public function success(Reservation $reservation): View|RedirectResponse
+    {
+        if (! $this->belongsToCurrentSession($reservation)) {
+            return redirect()
+                ->route('reservations.index')
+                ->with('error', 'Cette reservation n est pas disponible dans votre session.');
         }
+
+        if (! $this->isPaid($reservation)) {
+            return redirect()
+                ->route('payments.create', $reservation)
+                ->with('error', 'Veuillez finaliser le paiement avant d ouvrir cette page.');
+        }
+
+        $reservation->load('voyage');
+
+        return view('payments.success', compact('reservation'));
     }
 
-    public function success()
+    private function belongsToCurrentSession(Reservation $reservation): bool
     {
-        return view('payments.success');
+        return in_array($reservation->id, session('reservation_history', []), true);
     }
 
-    private function processPayment(array $data): bool
+    private function isPaid(Reservation $reservation): bool
     {
-        // Simulate payment processing
-        // In production, use Stripe API or similar
-        return true; // Always succeed for demo
+        return in_array($reservation->id, session('paid_reservations', []), true);
     }
 }

@@ -58,7 +58,7 @@
                             <span class="font-semibold text-slate-900">{{ $count }}</span>
                         </div>
                         <div class="h-3 overflow-hidden rounded-full bg-slate-100">
-                            <div class="h-full rounded-full bg-blue-600" style="width: {{ $statusTotal ? round($count / $statusTotal * 100) : 0 }}%"></div>
+                            <div class="h-full rounded-full bg-red-600" style="width: {{ $statusTotal ? round($count / $statusTotal * 100) : 0 }}%"></div>
                         </div>
                     </div>
                 @endforeach
@@ -106,15 +106,22 @@
                     <tbody class="divide-y divide-slate-200 bg-white">
                         @forelse($lastVoyages as $voyage)
                             <tr class="hover:bg-slate-50">
-                                <td class="px-4 py-3">{{ optional($voyage->travel_date)->format('d/m/Y') ?? '-' }}</td>
-                                <td class="px-4 py-3">{{ $voyage->destination ?? '-' }}</td>
+                                @php
+                                    $tripDate = $voyage->travel_date ?? $voyage->date_voyage ?? null;
+                                    $tripDestination = $voyage->destination ?? $voyage->ville_arrivee ?? '-';
+                                    $tripTickets = $voyage->tickets ?? $voyage->places_disponibles ?? 0;
+                                    $tripTtc = $voyage->total_ttc ?? $voyage->prix ?? 0;
+                                    $tripBlocked = (bool) ($voyage->is_blocked ?? false);
+                                @endphp
+                                <td class="px-4 py-3">{{ $tripDate ? \Illuminate\Support\Carbon::parse($tripDate)->format('d/m/Y') : '-' }}</td>
+                                <td class="px-4 py-3">{{ $tripDestination }}</td>
                                 <td class="px-4 py-3">{{ $voyage->transportCompany?->name ?? 'N/A' }}</td>
                                 <td class="px-4 py-3">{{ $voyage->line_name ?? '-' }}</td>
-                                <td class="px-4 py-3">{{ $voyage->tickets }}</td>
-                                <td class="px-4 py-3">{{ number_format((float) $voyage->total_ttc, 2, ',', ' ') }} DH</td>
+                                <td class="px-4 py-3">{{ $tripTickets }}</td>
+                                <td class="px-4 py-3">{{ number_format((float) $tripTtc, 2, ',', ' ') }} DH</td>
                                 <td class="px-4 py-3">
-                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $voyage->is_blocked ? 'bg-red-100 text-red-700' : 'bg-emerald-100 text-emerald-700' }}">
-                                        {{ $voyage->is_blocked ? 'Bloqué' : 'Ouvert' }}
+                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $tripBlocked ? 'bg-red-100 text-red-700' : 'bg-neutral-100 text-neutral-700' }}">
+                                        {{ $tripBlocked ? 'Bloqué' : 'Ouvert' }}
                                     </span>
                                 </td>
                             </tr>
@@ -137,7 +144,7 @@
                     <div class="mt-4 space-y-3">
                         @foreach($newReservations as $reservation)
                             <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                                Nouvelle réservation pour {{ $reservation->voyage->ville_arrivee ?? 'destination inconnue' }}
+                                Nouvelle reservation pour {{ optional($reservation->voyage)->ville_arrivee ?? optional($reservation->voyage)->destination ?? 'destination inconnue' }}
                             </div>
                         @endforeach
                     </div>
@@ -150,7 +157,7 @@
                 <form method="POST" action="{{ route('admin.voyages.import') }}" enctype="multipart/form-data" class="mt-4 flex flex-wrap items-center gap-3">
                     @csrf
                     <input type="file" name="file" required class="rounded-xl border border-slate-300 px-4 py-2">
-                    <button class="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700">Importer</button>
+                    <button class="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700">Importer</button>
                 </form>
             </div>
         </div>

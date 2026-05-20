@@ -21,7 +21,7 @@ class PasswordController extends Controller
         ]);
 
         $request->user()->update([
-            'password' => Hash::make($validated['password']),
+            'mot_de_passe' => Hash::make($validated['password']),
         ]);
 
         return back()->with('status', 'password-updated');

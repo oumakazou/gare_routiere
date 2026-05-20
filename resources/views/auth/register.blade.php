@@ -4,9 +4,9 @@
 
         <!-- Name -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+            <x-input-label for="nom" :value="__('Nom complet')" />
+            <x-text-input id="nom" class="block mt-1 w-full" type="text" name="nom" :value="old('nom', old('name'))" required autofocus autocomplete="name" />
+            <x-input-error :messages="$errors->get('nom')" class="mt-2" />
         </div>
 
         <!-- Email Address -->
@@ -40,38 +40,11 @@
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
+            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500" href="{{ route('login') }}">
                 {{ __('Already registered?') }}
             </a>
 
-            <x-primary-button class="ms-4">            <!DOCTYPE html>
-            <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-                <head>
-                    <meta charset="utf-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <meta name="csrf-token" content="{{ csrf_token() }}">
-            
-                    <title>{{ config('app.name', 'Laravel') }}</title>
-            
-                    <!-- Fonts -->
-                    <link rel="preconnect" href="https://fonts.bunny.net">
-                    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-            
-                    <!-- Scripts -->
-                    @vite(['resources/css/app.css', 'resources/js/app.js'])
-                </head>
-                <body class="font-sans text-gray-900 antialiased">
-                    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-                        <div class="text-center mb-8">
-                            <h1 class="text-4xl font-bold text-gray-800">Gare Routière</h1>
-                        </div>
-            
-                        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
-                         
-                        </div>
-                    </div>
-                </body>
-            </html>
+            <x-primary-button class="ms-4">
                 {{ __('Register') }}
             </x-primary-button>
         </div>

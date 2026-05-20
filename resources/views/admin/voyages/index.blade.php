@@ -6,14 +6,14 @@
 <div class="space-y-5">
     <div class="flex items-center justify-between">
         <h1 class="text-3xl font-bold">Gestion des voyages</h1>
-        <a href="{{ route('admin.voyages.create') }}" class="rounded-xl bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700">
+        <a href="{{ route('admin.voyages.create') }}" class="rounded-xl bg-red-600 px-4 py-2 font-semibold text-white hover:bg-red-700">
             + Nouveau voyage
         </a>
     </div>
 
     <form method="GET" class="grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 md:grid-cols-5">
         <input name="destination" value="{{ request('destination') }}" placeholder="Filtrer destination" class="rounded-xl border border-slate-300 px-4 py-2.5">
-        <input type="date" name="departure_date" value="{{ request('departure_date') }}" class="rounded-xl border border-slate-300 px-4 py-2.5">
+        <input type="date" name="travel_date" value="{{ request('travel_date') }}" class="rounded-xl border border-slate-300 px-4 py-2.5">
         <select name="company_id" class="rounded-xl border border-slate-300 px-4 py-2.5">
             <option value="">Toutes les sociétés</option>
             @foreach($companies as $company)
@@ -49,14 +49,14 @@
                         <td class="px-4 py-3">{{ $voyage->transportCompany?->name ?? '-' }}</td>
                         <td class="px-4 py-3">{{ $voyage->line_name }}</td>
                         <td class="px-4 py-3">{{ $voyage->destination }}</td>
-                        <td class="px-4 py-3">{{ optional($voyage->departure_date)->format('d/m/Y') }}</td>
+                        <td class="px-4 py-3">{{ optional($voyage->travel_date)->format('d/m/Y') }}</td>
                         <td class="px-4 py-3">{{ $voyage->departure_time ?: '-' }}</td>
-                        <td class="px-4 py-3">{{ $voyage->available_seats }}</td>
-                        <td class="px-4 py-3">{{ number_format((float)$voyage->price, 2, ',', ' ') }} DH</td>
+                        <td class="px-4 py-3">{{ $voyage->tickets }}</td>
+                        <td class="px-4 py-3">{{ number_format((float) $voyage->total_ttc, 2, ',', ' ') }} DH</td>
                         <td class="px-4 py-3">{{ $voyage->is_blocked ? 'Oui' : 'Non' }}</td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
-                                <a href="{{ route('admin.voyages.edit', $voyage) }}" class="text-blue-600 hover:underline">Modifier</a>
+                                <a href="{{ route('admin.voyages.edit', $voyage) }}" class="text-red-600 hover:underline">Modifier</a>
                                 <form method="POST" action="{{ route('admin.voyages.destroy', $voyage) }}" onsubmit="return confirm('Supprimer ce voyage ?');">
                                     @csrf
                                     @method('DELETE')

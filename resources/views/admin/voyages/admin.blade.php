@@ -11,7 +11,7 @@
         <!-- Sidebar -->
         <aside class="w-64 bg-slate-900 text-white flex-shrink-0">
             <div class="p-6">
-                <span class="text-2xl font-bold tracking-wider text-blue-400">GARE ADMIN</span>
+                <span class="text-2xl font-bold tracking-wider text-red-400">GARE ADMIN</span>
             </div>
             <nav class="mt-6 space-y-1 px-4">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 text-sm font-medium rounded-lg hover:bg-slate-800 transition">
@@ -45,7 +45,7 @@
             <!-- Page Content -->
             <main class="p-8">
                 @if(session('success'))
-                    <div class="mb-6 p-4 bg-green-100 border-l-4 border-green-500 text-green-700">
+                    <div class="mb-6 p-4 bg-neutral-100 border-l-4 border-neutral-500 text-neutral-700">
                         {{ session('success') }}
                     </div>
                 @endif

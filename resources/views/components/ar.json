@@ -1,0 +1,16 @@
+{
+    "app.name": "المحطة الطرقية",
+    "app.tagline": "النقل والتنقل",
+    "nav.home": "الرئيسية",
+    "nav.voyages": "الرحلات",
+    "nav.touristique": "سياحية",
+    "nav.messagerie": "المراسلة",
+    "nav.inspiration": "إلهام",
+    "nav.about": "من نحن",
+    "nav.contact": "اتصل بنا",
+    "nav.dashboard": "لوحة القيادة",
+    "nav.book_now": "احجز الآن",
+    "auth.login": "تسجيل الدخول",
+    "auth.register": "إنشاء حساب",
+    "auth.logout": "تسجيل الخروج"
+}

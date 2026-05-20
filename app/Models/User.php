@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Illuminate\Contracts\Auth\MustVerifyEmail; // Add this import
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail // Implement MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -16,9 +18,8 @@ class User extends Authenticatable
     protected $fillable = [
         'nom',
         'email',
-        'mot_de_passe',
         'role',
-        'is_admin',
+        'mot_de_passe', // Correct password column name
     ];
 
     protected $hidden = [
@@ -28,9 +29,18 @@ class User extends Authenticatable
 
     protected $casts = [
         'email_verified_at' => 'datetime',
-        'is_admin' => 'boolean',
-        'mot_de_passe' => 'hashed',
+        'mot_de_passe' => 'hashed', // Correct password column name
     ];
+
+    /**
+     * Check if the user has an admin role.
+     *
+     * @return bool
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
 
     public function getAuthPasswordName(): string
     {
@@ -40,6 +50,14 @@ class User extends Authenticatable
     public function getAuthPassword(): string
     {
         return (string) $this->mot_de_passe;
+    }
+
+    protected function password(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->mot_de_passe,
+            set: fn ($value) => ['mot_de_passe' => $value],
+        );
     }
 
     public function getNameAttribute(): string

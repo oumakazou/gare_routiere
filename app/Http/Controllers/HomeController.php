@@ -2,105 +2,147 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    public function index(Request $request): View
+    public function index(): View
     {
-        // Dummy voyage data as per README specification
-        $voyages = [
+        $featuredTrips = collect([
             [
-                'from' => 'Casablanca',
-                'to' => 'Rabat',
-                'date' => '2026-05-10',
-                'time' => '08:00',
-                'duration' => '1h 30m',
-                'seats' => 12,
-                'price' => '120',
-                'discount' => 10,
-                'image' => 'https://images.unsplash.com/photo-1489147910541-a8d3d545e941?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
-            ],
-            [
-                'from' => 'Rabat',
-                'to' => 'Fès',
-                'date' => '2026-05-10',
-                'time' => '10:30',
-                'duration' => '2h 15m',
-                'seats' => 8,
-                'price' => '180',
-                'discount' => null,
-                'image' => 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
-            ],
-            [
-                'from' => 'Fès',
-                'to' => 'Marrakech',
-                'date' => '2026-05-10',
-                'time' => '14:00',
-                'duration' => '3h 45m',
-                'seats' => 15,
-                'price' => '250',
-                'discount' => 15,
-                'image' => 'https://images.unsplash.com/photo-1539650116574-75c0c6d0b7ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
-            ],
-            [
-                'from' => 'Marrakech',
-                'to' => 'Agadir',
-                'date' => '2026-05-11',
-                'time' => '09:15',
-                'duration' => '2h 30m',
-                'seats' => 10,
-                'price' => '160',
-                'discount' => null,
-                'image' => 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
-            ],
-            [
-                'from' => 'Tanger',
+                'company' => 'Atlas Executive',
+                'from' => 'Taza',
                 'to' => 'Casablanca',
-                'date' => '2026-05-11',
-                'time' => '11:45',
+                'date' => '2026-05-16',
+                'time' => '07:15',
                 'duration' => '4h 20m',
-                'seats' => 20,
-                'price' => '280',
-                'discount' => 20,
-                'image' => 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+                'seats' => 12,
+                'price' => 190,
+                'image' => 'images/casa.png',
             ],
             [
-                'from' => 'Agadir',
+                'company' => 'Premium Lines',
+                'from' => 'Taza',
                 'to' => 'Marrakech',
-                'date' => '2026-05-11',
-                'time' => '16:30',
-                'duration' => '2h 30m',
-                'seats' => 14,
-                'price' => '160',
-                'discount' => 5,
-                'image' => 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+                'date' => '2026-05-16',
+                'time' => '06:45',
+                'duration' => '6h 10m',
+                'seats' => 8,
+                'price' => 260,
+                'image' => 'images/marakech.png',
             ],
             [
-                'from' => 'Rabat',
-                'to' => 'Tanger',
-                'date' => '2026-05-10',
-                'time' => '13:20',
-                'duration' => '3h 10m',
-                'seats' => 18,
-                'price' => '220',
-                'discount' => null,
-                'image' => 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
+                'company' => 'Blue Route',
+                'from' => 'Taza',
+                'to' => 'Chefchaouen',
+                'date' => '2026-05-17',
+                'time' => '09:00',
+                'duration' => '3h 05m',
+                'seats' => 9,
+                'price' => 145,
+                'image' => 'images/chafchaouin.png',
             ],
             [
-                'from' => 'Casablanca',
-                'to' => 'Fès',
-                'date' => '2026-05-10',
-                'time' => '07:00',
-                'duration' => '3h 45m',
-                'seats' => 22,
-                'price' => '240',
-                'discount' => 12,
-                'image' => 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-1.2.1&auto=format&fit=crop&w=1600&q=80'
-            ]
+                'company' => 'Sahara Night',
+                'from' => 'Taza',
+                'to' => 'Agadir',
+                'date' => '2026-05-17',
+                'time' => '21:00',
+                'duration' => '9h 35m',
+                'seats' => 15,
+                'price' => 320,
+                'image' => 'images/agadir.png',
+            ],
+        ]);
+
+        $destinations = collect([
+            [
+                'name' => 'Casablanca',
+                'image' => 'images/casa.png',
+                'copy_key' => 'home.destinations.casablanca',
+            ],
+            [
+                'name' => 'Marrakech',
+                'image' => 'images/marakech.png',
+                'copy_key' => 'home.destinations.marrakech',
+            ],
+            [
+                'name' => 'Chefchaouen',
+                'image' => 'images/chafchaouin.png',
+                'copy_key' => 'home.destinations.chefchaouen',
+            ],
+            [
+                'name' => 'Agadir',
+                'image' => 'images/agadir.png',
+                'copy_key' => 'home.destinations.agadir',
+            ],
+        ]);
+
+        $journeyStats = [
+            ['value' => '50K+', 'label_key' => 'home.stats.travelers'],
+            ['value' => '38', 'label_key' => 'home.stats.destinations'],
+            ['value' => '120+', 'label_key' => 'home.stats.departures'],
+            ['value' => '4.9/5', 'label_key' => 'home.stats.rating'],
         ];
 
-        return view('home', compact('voyages'));
+        $experienceCards = [
+            [
+                'title_key' => 'home.experience.comfort.title',
+                'copy_key' => 'home.experience.comfort.copy',
+            ],
+            [
+                'title_key' => 'home.experience.reliability.title',
+                'copy_key' => 'home.experience.reliability.copy',
+            ],
+            [
+                'title_key' => 'home.experience.support.title',
+                'copy_key' => 'home.experience.support.copy',
+            ],
+        ];
+
+        $journeySteps = [
+            [
+                'index' => '01',
+                'title_key' => 'home.steps.search.title',
+                'copy_key' => 'home.steps.search.copy',
+            ],
+            [
+                'index' => '02',
+                'title_key' => 'home.steps.confirm.title',
+                'copy_key' => 'home.steps.confirm.copy',
+            ],
+            [
+                'index' => '03',
+                'title_key' => 'home.steps.depart.title',
+                'copy_key' => 'home.steps.depart.copy',
+            ],
+        ];
+
+        $testimonials = [
+            [
+                'author' => 'Sara B.',
+                'role_key' => 'home.testimonials.sara.role',
+                'quote_key' => 'home.testimonials.sara.quote',
+            ],
+            [
+                'author' => 'Youssef M.',
+                'role_key' => 'home.testimonials.youssef.role',
+                'quote_key' => 'home.testimonials.youssef.quote',
+            ],
+            [
+                'author' => 'Nadia K.',
+                'role_key' => 'home.testimonials.nadia.role',
+                'quote_key' => 'home.testimonials.nadia.quote',
+            ],
+        ];
+
+        return view('home', compact(
+            'destinations',
+            'experienceCards',
+            'featuredTrips',
+            'journeyStats',
+            'journeySteps',
+            'testimonials',
+        ));
     }
 }

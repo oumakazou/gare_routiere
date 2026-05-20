@@ -1,0 +1,16 @@
+{
+    "app.name": "Gare Routière",
+    "app.tagline": "transport & mobilité",
+    "nav.home": "Accueil",
+    "nav.voyages": "Voyages",
+    "nav.touristique": "Touristiques",
+    "nav.messagerie": "Messagerie",
+    "nav.inspiration": "Inspiration",
+    "nav.about": "Qui sommes-nous",
+    "nav.contact": "Contact",
+    "nav.dashboard": "Tableau de bord",
+    "nav.book_now": "Réserver",
+    "auth.login": "Connexion",
+    "auth.register": "S'inscrire",
+    "auth.logout": "Déconnexion"
+}

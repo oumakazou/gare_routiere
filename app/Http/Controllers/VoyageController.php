@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\TransportCompany;
+use App\Models\Societe; // Use Societe model instead of TransportCompany
 use App\Models\Voyage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -15,11 +15,10 @@ class VoyageController extends Controller
         if (! Schema::hasTable('voyages')) {
             $voyages = collect();
             $suggestedCity = null;
-            $arrivalCities = collect();
-            $transportCompanies = collect();
-            $lines = collect();
+            $arrivalCities = collect(); // For destination dropdown
+            $societes = collect(); // For company dropdown
 
-            return view('voyages.index', compact('voyages', 'suggestedCity', 'arrivalCities', 'transportCompanies', 'lines'));
+            return view('voyages.index', compact('voyages', 'suggestedCity', 'arrivalCities', 'societes'));
         }
 
         $search = $request->filled('search') ? '%' . trim($request->string('search')->toString()) . '%' : null;
@@ -27,29 +26,36 @@ class VoyageController extends Controller
             ? $request->string('destination')->trim()->toString()
             : ($request->filled('ville_arrivee') ? $request->string('ville_arrivee')->trim()->toString() : null);
         $dateFilter = $request->filled('date_voyage') ? $request->date_voyage : $request->date;
+        $companyFilter = $request->filled('company_id') ? $request->integer('company_id') : null;
 
-        $query = Voyage::query()->with('transportCompany')
+        $query = Voyage::query()->with(['transportCompany'])
+
+        // Apply general search filter across relevant fields
             ->when($search, function ($query) use ($search) {
                 $query->where(function ($query) use ($search) {
-                    $query->where('destination', 'like', $search)
+                    $query->where('ville_arrivee', 'like', $search)
+                        ->orWhere('ville_depart', 'like', $search)
                         ->orWhere('line_name', 'like', $search)
-                        ->orWhere('observations', 'like', $search)
-                        ->orWhereHas('transportCompany', function ($query) use ($search) {
-                            $query->where('name', 'like', $search);
+                        ->orWhereHas('transportCompany', function ($subQuery) use ($search) {
+                            $subQuery->where('name', 'like', $search);
                         });
                 });
             })
+        // Filter by specific destination (arrival city name)
             ->when($destinationFilter, function ($query) use ($destinationFilter) {
-                $query->where('destination', 'like', '%' . $destinationFilter . '%');
+                $query->where('ville_arrivee', 'like', '%' . $destinationFilter . '%');
             })
+        // Filter by specific travel date
             ->when($dateFilter, function ($query) use ($dateFilter) {
                 $query->whereDate('travel_date', $dateFilter);
             })
-            ->when($request->filled('company_id'), function ($query) use ($request) {
-                $query->where('transport_company_id', $request->integer('company_id'));
+            // Filtrer par société de transport
+            ->when($companyFilter, function ($query) use ($companyFilter) {
+                $query->where('transport_company_id', $companyFilter);
             })
+            // Filtrer par nom de ligne
             ->when($request->filled('line_name'), function ($query) use ($request) {
-                $query->where('line_name', 'like', '%' . $request->string('line_name')->trim() . '%');
+                $query->where('line_name', $request->line_name);
             });
 
         $voyages = $query
@@ -58,43 +64,52 @@ class VoyageController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        // Logic for suggesting a city if no voyages are found
         $suggestedCity = null;
         if ($voyages->isEmpty() && ($request->filled('ville_arrivee') || $request->filled('destination'))) {
             $searchCity = $request->filled('destination')
                 ? $request->string('destination')->trim()->lower()->toString()
                 : $request->string('ville_arrivee')->trim()->lower()->toString();
 
+            // Get all distinct arrival city names from available voyages
             $cities = Voyage::query()
+                ->selectRaw('ville_arrivee as raw_city')
+                ->whereNotNull('ville_arrivee')
                 ->distinct()
-                ->pluck('destination');
+                ->pluck('raw_city')
+                ->unique();
 
             $bestScore = 0;
             foreach ($cities as $city) {
                 similar_text($searchCity, mb_strtolower($city), $score);
                 if ($score > $bestScore) {
                     $bestScore = $score;
-                    $suggestedCity = $city;
+                    $suggestedCity = $city; // Suggest the closest city name
                 }
             }
         }
 
+        // Get all distinct arrival cities for the dropdown filter
         $arrivalCities = Voyage::query()
+            ->selectRaw('ville_arrivee as raw_city')
+            ->whereNotNull('ville_arrivee')
             ->distinct()
-            ->orderBy('destination')
-            ->pluck('destination');
+            ->pluck('raw_city')
+            ->sort()
+            ->values();
 
-        $transportCompanies = Schema::hasTable('transport_companies')
-            ? TransportCompany::query()
-                ->orderBy('name')
-                ->pluck('name', 'id')
-            : collect();
+        $lines = Voyage::query()->whereNotNull('line_name')->distinct()->pluck('line_name');
+        $societes = \App\Models\TransportCompany::all();
+        $transportCompanies = \App\Models\TransportCompany::pluck('name', 'id');
 
-        $lines = Voyage::query()
-            ->distinct()
-            ->orderBy('line_name')
-            ->pluck('line_name');
-
-        return view('voyages.index', compact('voyages', 'suggestedCity', 'arrivalCities', 'transportCompanies', 'lines'));
+        return view('voyages.index', compact(
+            'voyages',
+            'suggestedCity',
+            'arrivalCities',
+            'societes',
+            'transportCompanies',
+            'lines'
+        ));
     }
 
     public function show(Voyage $voyage): View
